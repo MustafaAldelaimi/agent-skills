@@ -1,0 +1,5 @@
+.DS_Store
+.env
+.env.*
+*.bak
+platform_dev.bak
