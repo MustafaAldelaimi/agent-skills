@@ -10,6 +10,7 @@ Personal Cursor and Claude Code skills — versioned and synced from one repo.
 | [raise-pr](skills/raise-pr/) | Raise PRs via `gh` with optional Bugbot review loop | [Multiverse-io/ai-rules#44](https://github.com/Multiverse-io/ai-rules/pull/44) |
 | [platform-prodscript-review-playbook](skills/platform-prodscript-review-playbook/) | Safe local validation loop for Platform prodscripts | Custom (Multiverse platform repo) |
 | [fetch-multiverse-techdocs](skills/fetch-multiverse-techdocs/) | Fetch latest TechDocs from GitHub (Reef source) for any Multiverse repo or event | Custom |
+| [maintain-work-context](skills/maintain-work-context/) | Live project + daily work journal so agents stay context-aware | Custom |
 
 ## Install (Cursor)
 
