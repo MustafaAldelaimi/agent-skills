@@ -11,6 +11,7 @@ Personal Cursor and Claude Code skills — versioned and synced from one repo.
 | [platform-prodscript-review-playbook](skills/platform-prodscript-review-playbook/) | Safe local validation loop for Platform prodscripts | Custom (Multiverse platform repo) |
 | [fetch-multiverse-techdocs](skills/fetch-multiverse-techdocs/) | Fetch latest TechDocs from GitHub (Reef source) for any Multiverse repo or event | Custom |
 | [maintain-work-context](skills/maintain-work-context/) | Live project + daily work journal so agents stay context-aware | Custom |
+| [request-review](skills/request-review/) | Draft `#dp-learner` Slack review pings (`:git_rereview_requested:` + PR links) | Custom |
 
 ## Install (Cursor)
 
