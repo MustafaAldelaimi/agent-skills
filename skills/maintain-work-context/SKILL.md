@@ -43,7 +43,7 @@ Do not bootstrap inside `node_modules`, `.git`, or unrelated monorepo packages u
 Before non-trivial work, read in order:
 
 1. `docs/work/PROJECT.md` — goal, current focus, constraints, open questions
-2. Latest journal file(s) in `docs/work/journal/` — sort by filename (date), read today and yesterday if they exist
+2. Journal files in `docs/work/journal/` — sort by filename (date) and read the most recent one or two; use the current session date to identify today's file
 
 If files are missing, offer Phase 1 bootstrap instead of guessing project state.
 
@@ -100,7 +100,7 @@ alwaysApply: true
 
 Before non-trivial tasks:
 1. Read `docs/work/PROJECT.md`
-2. Read today's and yesterday's files in `docs/work/journal/` if they exist
+2. Read the most recent one or two files in `docs/work/journal/` if they exist
 
 After meaningful progress, decisions, or scope changes:
 - Offer to update `PROJECT.md` and today's journal
@@ -109,6 +109,8 @@ Keep updates concise. Do not invent project state — ask the user if context fi
 ```
 
 If the user uses a different path (e.g. `.cursor/work/`), follow their convention and put that path in the rule.
+
+`alwaysApply: true` runs on every task in the repo. If that's too noisy, set `alwaysApply: false` and scope it — accepting that cold-start context loading becomes manual.
 
 ## Phase 6: Optional Integrations
 
@@ -121,13 +123,6 @@ If the workflow is tracked in Linear:
 1. Find or create a **Project** via Linear MCP (`list_projects`, `save_project`).
 2. Add the Linear project URL to `PROJECT.md` → **Links**.
 3. Optionally mirror **Next** items as Linear issues (`save_issue`) — tickets are tasks; `PROJECT.md` stays the narrative layer.
-
-### Notion
-
-If the user prefers Notion over files:
-
-1. Search for an existing project page via Notion MCP.
-2. Keep a short `PROJECT.md` in-repo as the **agent-optimized summary** (5-minute sync when focus shifts), or maintain Notion only if the user explicitly opts out of files.
 
 ## Quality Rules
 
