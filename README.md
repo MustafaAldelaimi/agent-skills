@@ -12,6 +12,7 @@ Personal Cursor and Claude Code skills — versioned and synced from one repo.
 | [fetch-multiverse-techdocs](skills/fetch-multiverse-techdocs/) | Fetch latest TechDocs from GitHub (Reef source) for any Multiverse repo or event | Custom |
 | [maintain-work-context](skills/maintain-work-context/) | Live project + daily work journal so agents stay context-aware | Custom |
 | [request-review](skills/request-review/) | Draft `#dp-learner` Slack review pings (`:git_rereview_requested:` + PR links) | Custom |
+| [corpo-standup-waffle](skills/corpo-standup-waffle/) | Generate an impromptu standup script from PROJECT.md/journal + read-only Linear/Slack/GitHub — output-only, never sends | Custom |
 
 ## Install (Cursor)
 
