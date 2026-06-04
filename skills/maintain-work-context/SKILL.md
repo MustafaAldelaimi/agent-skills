@@ -76,6 +76,12 @@ Use the journal template in [templates.md](templates.md). Capture:
 
 One file per calendar day. Do not merge days into a single blob.
 
+**Factual source for `## Done` (when `claw-work-activity` is installed):**
+
+- If `docs/work/activity/<today>.md` exists (left by an earlier `claw-work-activity` run today), treat it as the factual source for the journal's `## Done` block. The agent's job becomes narrating + editing, not remembering.
+- If the file does not exist, optionally invoke `claw-work-activity` in **`for-journal` mode**. That skill will print the chat report and then show a **Yes/No confirmation prompt** before writing `docs/work/activity/<today>.md`. If the user picks **Yes**, use the resulting file as the factual source. If **No**, proceed with the chat output as feedstock — no file is written, the journal still gets updated.
+- Never bypass the confirmation prompt; the user always decides whether the activity artefact lives on disk.
+
 ## Phase 4: Handoff Between Agent Sessions
 
 When the user ends a session or says "save context for next time":
@@ -123,6 +129,10 @@ If the workflow is tracked in Linear:
 1. Find or create a **Project** via Linear MCP (`list_projects`, `save_project`).
 2. Add the Linear project URL to `PROJECT.md` → **Links**.
 3. Optionally mirror **Next** items as Linear issues (`save_issue`) — tickets are tasks; `PROJECT.md` stays the narrative layer.
+
+### claw-work-activity (factual feed for the journal)
+
+If installed, [`claw-work-activity`](../claw-work-activity/) produces a timestamped activity report from git/GitHub, Linear, and Slack. When invoked in `for-journal` mode during Phase 3, it proposes saving `docs/work/activity/<today>.md` (gated on a Yes/No confirmation prompt). The journal's `## Done` block then narrates that factual file rather than relying on agent recall.
 
 ## Quality Rules
 

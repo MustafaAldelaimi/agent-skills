@@ -3,3 +3,6 @@
 .env.*
 *.bak
 platform_dev.bak
+
+# claw-work-activity skill identity cache (local handles, never push)
+skills/claw-work-activity/me-identity.md

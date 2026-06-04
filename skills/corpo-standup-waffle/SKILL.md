@@ -34,6 +34,8 @@ Read in this order, silently:
 
 1. `docs/work/PROJECT.md` — extract: Goal, Current focus, Constraints/decisions, Cross-team/ownership, Heads-ups, Open questions, Blockers, Done (recent), Next, milestones/dates.
 2. The most recent 1–2 files in `docs/work/journal/` (sorted by filename = date).
+3. `docs/work/activity/<today>.md` if it exists (left by an earlier `claw-work-activity` `for-journal` run today) — treat as factual feedstock for the Done/Progressed section.
+4. If `claw-work-activity` is installed and `docs/work/activity/<today>.md` does NOT exist, optionally invoke it in **`for-context` mode** (chat-only, no save prompt) for richer Git/Linear/Slack activity than PROJECT.md/journal alone provides. Use the returned report as Done/Progressed feedstock; do not ask the user to save anything.
 
 If `docs/work/PROJECT.md` is missing, **stop** and trigger the **Project ambiguous** interview stage. Do not guess project state.
 
@@ -133,8 +135,14 @@ Record durable answers (confirmed owners, channel ids) back into [`org-map.md`](
 - Not a status report generator that fabricates progress. Every line maps to a real fact in PROJECT.md / journal / Linear / Slack.
 - Not a permanent record. The script is throwaway; the org-map cache is the only durable artefact.
 
-## Related files
+## Related files and skills
+
+Within this skill:
 
 - [`phrasebook.md`](phrasebook.md) — corporate lexicon + fact→waffle transformation rules + stalling/stakeholder-drag patterns.
 - [`org-map.md`](org-map.md) — team/channel/people cache with discovery + verification procedure.
 - [`examples.md`](examples.md) — one worked example from a real PROJECT.md.
+
+Upstream skill (optional, recommended when installed):
+
+- [`claw-work-activity`](../claw-work-activity/) — produces the timestamped activity report this skill consumes in Step 1 (invoked in `for-context` mode → chat-only, no save prompt).
