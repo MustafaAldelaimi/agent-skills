@@ -42,7 +42,10 @@ Notes
 - Window resolved from: default "today"
 - Sources skipped/failed: none
 - Linear-comment-only items NOT included (MCP limitation - see SKILL).
+- Slack relevance filter: 5 work messages kept; 2 social/logistics omitted (DM/social tier only; work channels verbatim).
 ```
+
+(The two `#C047DUQK58S` and `#ask-dp-learner` entries are named work channels, so they stay verbatim — including the short `thanks Al`. The 2 omitted were scheduling/banter DMs that referenced no work artifact.)
 
 **Save prompt:** **none.** `standalone` mode never proposes a save. The skill prints the report and returns control.
 
@@ -155,4 +158,5 @@ Cursor sessions (3)
 
 - The Git/Linear/Slack entries above are illustrative — drawn from a plausible workday on the PLA project. Real runs cite real events surfaced from `gh api`, Linear MCP, and Slack MCP for the resolved identity.
 - DM/private Slack snippets appear verbatim in **both** chat and file. If you're screensharing during a run, run the skill privately first.
+- The Slack **relevance filter** is channel-aware: named work channels (incident/project/`#ask-*`/team) stay verbatim; DMs, group DMs, and social channels keep a message only if it references a work artifact (PR/ticket/link) or is substantive. Pure scheduling, one-word acks, emoji-only, and jokes are omitted from that tier — but the omitted count is always disclosed in `Notes`, never dropped silently.
 - `Linear-comment-only items NOT included` is the standing caveat in the `Notes` block — Linear MCP can't filter `list_issues` by "commented-by me", so issues you only commented on (not assigned, not in a project where you're a member) won't surface from Linear directly. They may still appear via the gh search if the comment was on a linked GitHub PR/issue.

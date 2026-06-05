@@ -3,8 +3,9 @@ name: claw-work-activity
 description: >
   Produce a dated, timestamped activity report for a chosen time window by
   pulling the user's own activity from GitHub (gh), Linear (MCP), and Slack
-  (public + private + DMs, always included), plus optional local Cursor
-  agent-session summaries (opt-in, read-only). Strictly read-only across every
+  (public + private + DMs; social/logistics noise filtered, omissions
+  disclosed), plus optional local Cursor agent-session summaries (opt-in,
+  read-only). Strictly read-only across every
   source. Save behaviour is caller-proposed and user-confirmed: standalone +
   for-context invocations are chat-only with no save prompt; for-journal
   (invoked by maintain-work-context) and standalone-with-save propose a save
@@ -31,6 +32,7 @@ The skill is the **factual** companion to:
 - **Identity cache is skill-local and gitignored.** `me-identity.md` lives next to `SKILL.md` and is in the repo's `.gitignore` so handles are never pushed.
 - **Never invent activity.** If a source fails or returns empty, say so in the `Notes` block and move on. Empty days exist and that's the correct output for them.
 - **Slack scope is symmetric.** Public, private, and DM message snippets appear verbatim in **both** chat output and the saved file. If you're about to screenshare during a run, run the skill privately first.
+- **Slack relevance filter never drops silently.** The channel-aware filter (Step 3) applies **identically** to chat and file, and only ever omits clearly non-work chatter from the DM/social tier — the omitted count is always disclosed in `Notes`, and when unsure you keep the message. Work channels are never filtered.
 - **Cursor sessions are opt-in and read-only.** The bucket is off by default; it is only built when the user explicitly opts in for the run. The Cursor SQLite state DB is opened **read-only/immutable** (`file:...?immutable=1`) — never copied, moved, or written. Transcript `.jsonl` files are read, never modified.
 - **Likely-personal sessions are excluded by default.** Sessions whose title or first query match personal keywords (job/CV/HR/contract/review/etc.) are listed separately and only included on an explicit tick — never auto-included.
 - **Extra consent before saving session content.** When a save is proposed (`for-journal` / `standalone-with-save`) and any included session is flagged-personal, require a second explicit acknowledgement before its content is written to `docs/work/activity/*.md` (that path may be a git repo).
@@ -104,6 +106,11 @@ Always carry the TZ in the output header (default: local).
 - `slack_search_public_and_private { query: "from:<@uid> after:<YYYY-MM-DD>", limit: 250 }`.
 - For each result, optionally `slack_read_thread` to grab one line of parent context (your message + the immediate parent message). Skip if rate-limited.
 - Channel display: resolve channel id → `#name` via `slack_search_channels` (cache the mapping in-session).
+- **Relevance filter (channel-aware, disclosed — never silent).** Cuts social/logistics noise without fabricating or hiding anything:
+  - **Work channels** (named public/private channels — incident, project, `#ask-*`, team/squad): keep **all** your messages verbatim. High signal, low risk. Exception: obviously-social channels (`#random`, `#social`, `#watercooler`, `*-banter`) are treated as the social tier below.
+  - **DMs + group DMs + social channels**: keep a message only if it (a) references a work artifact — PR/issue URL, ticket ID (`[A-Z]{2,}-\d+`), or a github/linear/metabase/notion link — **or** (b) is substantive (more than a one-word ack, not emoji-only, not pure scheduling/banter).
+  - **Omit** from that tier: emoji-only or blank messages, one-word acknowledgements (`thanks`, `ok`, `lgtm` alone), and pure scheduling/social chatter (`2pm?`, `Slack?`, jokes).
+  - **Always disclose** the omitted count in `Notes` (e.g. `Slack: 2 work messages kept; 5 social/logistics omitted`). Never omit without counting. When in doubt, keep it.
 
 **Cursor sessions** (local agent transcripts; **opt-in**, read-only):
 
@@ -203,6 +210,7 @@ Notes
 - Window resolved from: <today | --since arg | interview answer>
 - Sources skipped/failed: <list, e.g. "Linear list_comments rate-limited; partial">
 - Linear-comment-only items NOT included (MCP limitation - see SKILL).
+- Slack relevance filter: <N work messages kept; M social/logistics omitted (DM/social tier only; work channels verbatim)>.
 - Cursor sessions: <not requested | opted in: N of M in-window sessions included; K flagged-personal excluded>.
 ```
 
