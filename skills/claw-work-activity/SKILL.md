@@ -3,7 +3,8 @@ name: claw-work-activity
 description: >
   Produce a dated, timestamped activity report for a chosen time window by
   pulling the user's own activity from GitHub (gh), Linear (MCP), and Slack
-  (public + private + DMs, always included). Strictly read-only across every
+  (public + private + DMs, always included), plus optional local Cursor
+  agent-session summaries (opt-in, read-only). Strictly read-only across every
   source. Save behaviour is caller-proposed and user-confirmed: standalone +
   for-context invocations are chat-only with no save prompt; for-journal
   (invoked by maintain-work-context) and standalone-with-save propose a save
@@ -30,6 +31,10 @@ The skill is the **factual** companion to:
 - **Identity cache is skill-local and gitignored.** `me-identity.md` lives next to `SKILL.md` and is in the repo's `.gitignore` so handles are never pushed.
 - **Never invent activity.** If a source fails or returns empty, say so in the `Notes` block and move on. Empty days exist and that's the correct output for them.
 - **Slack scope is symmetric.** Public, private, and DM message snippets appear verbatim in **both** chat output and the saved file. If you're about to screenshare during a run, run the skill privately first.
+- **Cursor sessions are opt-in and read-only.** The bucket is off by default; it is only built when the user explicitly opts in for the run. The Cursor SQLite state DB is opened **read-only/immutable** (`file:...?immutable=1`) — never copied, moved, or written. Transcript `.jsonl` files are read, never modified.
+- **Likely-personal sessions are excluded by default.** Sessions whose title or first query match personal keywords (job/CV/HR/contract/review/etc.) are listed separately and only included on an explicit tick — never auto-included.
+- **Extra consent before saving session content.** When a save is proposed (`for-journal` / `standalone-with-save`) and any included session is flagged-personal, require a second explicit acknowledgement before its content is written to `docs/work/activity/*.md` (that path may be a git repo).
+- **Never read full transcripts into the parent.** Transcripts can run to hundreds of messages; summarise each selected session in a readonly subagent and ingest only the short summary (see Step 3, Cursor sessions).
 
 ## Workflow (5 steps)
 
@@ -100,11 +105,44 @@ Always carry the TZ in the output header (default: local).
 - For each result, optionally `slack_read_thread` to grab one line of parent context (your message + the immediate parent message). Skip if rate-limited.
 - Channel display: resolve channel id → `#name` via `slack_search_channels` (cache the mapping in-session).
 
+**Cursor sessions** (local agent transcripts; **opt-in**, read-only):
+
+Captures in-chat work — investigations, planning, debugging, decisions — that often leaves no Git/Linear/Slack trace. Off by default; build it only when the user opts in for the run. Works across **all** workspaces opened in Cursor on this machine, not just the current one.
+
+*Discovery + metadata first — no transcript reads yet, so the parent context stays tiny.* Titles and timestamps come from Cursor's SQLite state DB; workspace and transcript path come from the filesystem. Join on the chat UUID (`composerId`).
+
+```bash
+DB="$HOME/Library/Application Support/Cursor/User/globalStorage/state.vscdb"
+# Real sidebar titles. immutable=1 => snapshot read: no WAL lock, no multi-GB copy.
+sqlite3 "file:$DB?immutable=1" \
+  "SELECT json_extract(value,'\$.composerId'), json_extract(value,'\$.name'), \
+          json_extract(value,'\$.createdAt'), json_extract(value,'\$.lastUpdatedAt') \
+   FROM cursorDiskKV WHERE key LIKE 'composerData:%';"
+```
+
+- Keep sessions whose `lastUpdatedAt` (epoch ms) falls in the window.
+- Resolve workspace + transcript file from the filesystem: `~/.cursor/projects/<workspace>/agent-transcripts/<uuid>/<uuid>.jsonl` (exclude `subagents/`). Derive the workspace/repo label from `<workspace>`.
+- If a transcript file exists but has no `composerData` row, fall back to a title derived from the first `<user_query>` and note it.
+
+**Timestamps:** each user turn in the `.jsonl` carries a `<timestamp>` tag — use the first as session start, and `lastUpdatedAt`/file mtime as last-activity. (Assistant turns are not timestamped.)
+
+**Flag likely-personal sessions** (case-insensitive) on title + first user query:
+`cv|resume|job|applic|eligib|salary|offer|\bhr\b|contract|promotion|performance review|interview|visa|immigration|beapplied|personal`
+
+**Selection (opt-in):** present the titled list via `AskQuestion` multi-select with **nothing selected by default**. List flagged-personal sessions in a separate "Likely personal (excluded)" group that must be ticked explicitly. Only ticked UUIDs proceed.
+
+**Summarise via subagent** (keeps full transcripts out of the parent's context): for each selected UUID, spawn a readonly `Task` subagent (one transcript each, parallelisable) with this fixed contract:
+
+> Read ONLY `<abs path to that .jsonl>`. Return, in <=120 words: title; workspace; start (first `<timestamp>`) and last-activity; 2-5 bullets of what was actually done; artifacts (PR/issue URLs, ticket IDs, files touched); one-line outcome. Do not paste the raw transcript.
+
+The parent ingests only these summaries — never the raw `.jsonl`.
+
 ### Step 4 — Merge + dedupe + sort
 
 - Dedupe across sources by URL or `(source, id)`. A `PullRequestEvent` from `users/<you>/events` and a `gh search prs` hit for the same PR are the same event.
+- Dedupe Cursor sessions against Git/Linear: if a session summary references a PR/ticket already listed in another bucket, annotate that entry (e.g. "(worked in Cursor session …)") rather than listing it twice.
 - Sort all entries by timestamp (display in local TZ).
-- Bucket by source (Git / Linear / Slack) for the printed report, but keep timestamps so the bucket reads chronologically top-to-bottom.
+- Bucket by source (Git / Linear / Slack / Cursor sessions) for the printed report, but keep timestamps so the bucket reads chronologically top-to-bottom.
 
 ### Step 5 — Output (mode-routed, Yes/No save prompt)
 
@@ -158,10 +196,14 @@ Slack (<N> messages)
 - HH:MM - #<channel> - "<first 100 chars of message>..."
 - HH:MM - DM <name> - "<first 100 chars of message>..."
 
+Cursor sessions (<N>)   # only when opted in; omit the bucket entirely otherwise
+- HH:MM - <workspace> - "<title>" - <one-line outcome> [PR/ticket refs]
+
 Notes
 - Window resolved from: <today | --since arg | interview answer>
 - Sources skipped/failed: <list, e.g. "Linear list_comments rate-limited; partial">
 - Linear-comment-only items NOT included (MCP limitation - see SKILL).
+- Cursor sessions: <not requested | opted in: N of M in-window sessions included; K flagged-personal excluded>.
 ```
 
 ## Interview stages
@@ -173,6 +215,8 @@ Pause and ask the user (use `AskQuestion` when available; otherwise ask conversa
 | **No window specified** and not obviously "today" | Window? (today / yesterday / since last report / last Nd / custom ISO) |
 | **Identity cache missing or stale** | Confirm your Slack display name + GitHub login so I can resolve "me" correctly |
 | **Save proposed by caller** (`for-journal` or `standalone-with-save`) | Mid-conversation Yes/No confirmation prompt (see Step 5) |
+| **Cursor sessions requested** (user opts in for the run) | Titled multi-select of in-window sessions (default none; flagged-personal shown in a separate excluded group) |
+| **Flagged-personal session included in a save mode** | Second explicit acknowledgement before its content is written to `docs/work/activity/*.md` |
 
 `standalone` and `for-context` never propose a save → no save prompt at all.
 
@@ -185,12 +229,12 @@ Pause and ask the user (use `AskQuestion` when available; otherwise ask conversa
 
 ## Out of scope (v1)
 
-- **Cursor agent transcripts** (`~/.cursor/projects/.../agent-transcripts/*.jsonl`) — could become a "Chat sessions" bucket; deferred (noise + privacy).
-- **Terminal command history** (`~/.cursor/projects/.../terminals/*.txt`) — same; deferred.
+- **Cursor agent transcripts** — now supported as the opt-in **Cursor sessions** bucket (Step 3): titles via the SQLite state DB, per-session subagent summaries, flagged-personal excluded by default. Off unless the user opts in.
+- **Terminal command history** (`~/.cursor/projects/.../terminals/*.txt`) — deferred (noise + privacy).
 - **Linear comment-only items** without assigneeship or project membership — MCP limitation. Noted in `Notes` block; no heroic workaround.
 - **Automatic journal write-back.** Even with the file written, the journal stays human-curated. The activity file is a parallel artefact, not the journal itself.
 
 ## Related files
 
-- [examples.md](examples.md) — three worked runs covering `standalone`, `for-context`, and `for-journal` (with the Yes/No prompt).
+- [examples.md](examples.md) — worked runs covering `standalone`, `for-context`, `for-journal` (with the Yes/No prompt), and the opt-in Cursor sessions bucket.
 - `me-identity.md` (gitignored, created on first run) — your resolved handles + cache timestamp.

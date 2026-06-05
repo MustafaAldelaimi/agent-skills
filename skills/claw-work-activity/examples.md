@@ -106,6 +106,51 @@ Either choice is fine — the journal still gets updated. The file is only an op
 
 ---
 
+## Example D — opt-in Cursor sessions bucket (titled multi-select + subagent summaries)
+
+**Trigger:** user wants in-chat work (research, debugging, decisions) included — not just Git/Linear/Slack.
+
+> User: "claw my work this week and include my Cursor sessions"
+
+**Mode resolution:** direct invocation → `standalone`. **Window:** `last-7d`.
+
+**Step 3 (Cursor sessions):** harvest metadata only — read titles + timestamps from the SQLite state DB (`file:...?immutable=1`) and join to transcript dirs across all workspaces. No `.jsonl` is read yet. Likely-personal sessions are flagged.
+
+**Selection prompt (nothing ticked by default):**
+
+```
+Cursor sessions in window (tick to include):
+[ ] aurora        | Module-level and competency-level PLA investigation
+[ ] aurora        | Adding dp-learner tag to workflows
+[ ] notifications | Users with approved-by-mv-and-client status
+
+Likely personal (excluded - tick only to include):
+[ ] aurora        | CV eligibility check
+```
+
+User ticks the three work sessions, leaves the personal one unticked.
+
+**Summarisation:** one readonly subagent per ticked session reads that single `.jsonl` and returns a <=120-word summary. The parent ingests only those summaries (never the full 300-message transcript).
+
+**Resulting bucket (appended to the Example A body):**
+
+```
+Cursor sessions (3)
+- 16:06 - aurora - "Module-level and competency-level PLA investigation" - confirmed no event change; scoped 6-ticket events workstream [SEA-1849]
+- 16:17 - aurora - "Adding dp-learner tag to workflows" - tagged 7 Knock workflows in dev via CLI
+- 13:15 - notifications - "Users with approved-by-mv-and-client status" - wrote recipient query for the comms audit
+```
+
+**Notes block additions:**
+
+```
+- Cursor sessions: opted in: 3 of 4 in-window sessions included; 1 flagged-personal excluded.
+```
+
+**Save behaviour:** in `standalone` this is chat-only. Had this been `for-journal` with a flagged-personal session ticked, the skill would require a second acknowledgement before writing that session's content to `docs/work/activity/*.md`.
+
+---
+
 ## Notes on the examples
 
 - The Git/Linear/Slack entries above are illustrative — drawn from a plausible workday on the PLA project. Real runs cite real events surfaced from `gh api`, Linear MCP, and Slack MCP for the resolved identity.
