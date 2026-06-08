@@ -4,8 +4,9 @@ description: >
   Produce a dated, timestamped activity report for a chosen time window by
   pulling the user's own activity from GitHub (gh), Linear (MCP), and Slack
   (public + private + DMs; social/logistics noise filtered, omissions
-  disclosed), plus optional local Cursor agent-session summaries (opt-in,
-  read-only). Strictly read-only across every
+  disclosed), plus optional local agent-session summaries (opt-in, read-only;
+  Cursor by default, cross-agent via agentgrep when available). Strictly
+  read-only across every
   source. Save behaviour is caller-proposed and user-confirmed: standalone +
   for-context invocations are chat-only with no save prompt; for-journal
   (invoked by maintain-work-context) and standalone-with-save propose a save
@@ -37,6 +38,7 @@ The skill is the **factual** companion to:
 - **Likely-personal sessions are excluded by default.** Sessions whose title or first query match personal keywords (job/CV/HR/contract/review/etc.) are listed separately and only included on an explicit tick — never auto-included.
 - **Extra consent before saving session content.** When a save is proposed (`for-journal` / `standalone-with-save`) and any included session is flagged-personal, require a second explicit acknowledgement before its content is written to `docs/work/activity/*.md` (that path may be a git repo).
 - **Never read full transcripts into the parent.** Transcripts can run to hundreds of messages; summarise each selected session in a readonly subagent and ingest only the short summary (see Step 3, Cursor sessions).
+- **The agentgrep backend is optional and non-fatal.** It only ever widens coverage to other agents; if it is missing, prereq-blocked (needs Python >=3.14), or errors, fall back silently to the SQLite + filesystem path and note it — never fail the run because the optional backend is unavailable.
 
 ## Workflow (5 steps)
 
@@ -144,6 +146,17 @@ sqlite3 "file:$DB?immutable=1" \
 
 The parent ingests only these summaries — never the raw `.jsonl`.
 
+**Optional cross-agent backend ([agentgrep](https://agentgrep.org)).** If the `agentgrep` MCP server is available **or** the `agentgrep` CLI is on `PATH`, widen the bucket beyond Cursor IDE to every agent it indexes (Codex, Claude Code, Cursor CLI, Gemini, Grok, Pi, OpenCode). It is read-only and entirely optional — when absent or erroring, fall back **silently** to the SQLite + filesystem path above (Cursor IDE only) and never fail the run on its account.
+
+- **Detect:** `command -v agentgrep` (CLI) or the presence of the agentgrep MCP server. If neither, skip this sub-step.
+- **Enumerate (window-list, not keyword):** `agentgrep find --json` with no query term streams all records; filter them to the window by their timestamp client-side. (agentgrep's `search`/`grep` are term-driven — use `find` for "everything in window".)
+- Each record carries `agent`, `title`, `path`. Label each session with its `agent`.
+- **Dedupe against the SQLite rows:** a Cursor IDE record from agentgrep and the same `composerData` row are one session — prefer the SQLite title (the exact sidebar name) and drop the agentgrep duplicate. Non-Cursor agents add net-new sessions.
+- Feed the merged, de-duped set into the **same** opt-in selection + per-session subagent summarisation as above (the subagent reads `record.path`). Personal-flagging applies to every agent.
+- **Prereqs:** agentgrep needs Python `>=3.14` and a runner (`uv`/`uvx`/`pipx`). If it is configured but unavailable, note it in `Notes` and continue with the SQLite path.
+
+When agentgrep contributes non-Cursor sessions, title the output bucket **Agent sessions** instead of **Cursor sessions**.
+
 ### Step 4 — Merge + dedupe + sort
 
 - Dedupe across sources by URL or `(source, id)`. A `PullRequestEvent` from `users/<you>/events` and a `gh search prs` hit for the same PR are the same event.
@@ -204,7 +217,9 @@ Slack (<N> messages)
 - HH:MM - DM <name> - "<first 100 chars of message>..."
 
 Cursor sessions (<N>)   # only when opted in; omit the bucket entirely otherwise
+                        # title it "Agent sessions" if agentgrep added non-Cursor agents
 - HH:MM - <workspace> - "<title>" - <one-line outcome> [PR/ticket refs]
+- HH:MM - <agent> - "<title>" - <one-line outcome>   # cross-agent rows (agentgrep) carry their agent label
 
 Notes
 - Window resolved from: <today | --since arg | interview answer>
@@ -212,6 +227,7 @@ Notes
 - Linear-comment-only items NOT included (MCP limitation - see SKILL).
 - Slack relevance filter: <N work messages kept; M social/logistics omitted (DM/social tier only; work channels verbatim)>.
 - Cursor sessions: <not requested | opted in: N of M in-window sessions included; K flagged-personal excluded>.
+- agentgrep (cross-agent): <not installed | used: P agents covered | configured but unavailable - fell back to SQLite/Cursor-only>.
 ```
 
 ## Interview stages
@@ -237,7 +253,7 @@ Pause and ask the user (use `AskQuestion` when available; otherwise ask conversa
 
 ## Out of scope (v1)
 
-- **Cursor agent transcripts** — now supported as the opt-in **Cursor sessions** bucket (Step 3): titles via the SQLite state DB, per-session subagent summaries, flagged-personal excluded by default. Off unless the user opts in.
+- **Cursor agent transcripts** — now supported as the opt-in **Cursor sessions** bucket (Step 3): titles via the SQLite state DB, per-session subagent summaries, flagged-personal excluded by default. Off unless the user opts in. Optionally widened to other agents (Codex/Claude/Gemini/etc.) via agentgrep when present.
 - **Terminal command history** (`~/.cursor/projects/.../terminals/*.txt`) — deferred (noise + privacy).
 - **Linear comment-only items** without assigneeship or project membership — MCP limitation. Noted in `Notes` block; no heroic workaround.
 - **Automatic journal write-back.** Even with the file written, the journal stays human-curated. The activity file is a parallel artefact, not the journal itself.

@@ -152,6 +152,8 @@ Cursor sessions (3)
 
 **Save behaviour:** in `standalone` this is chat-only. Had this been `for-journal` with a flagged-personal session ticked, the skill would require a second acknowledgement before writing that session's content to `docs/work/activity/*.md`.
 
+**Cross-agent (optional):** if `agentgrep` is installed, the same step also enumerates non-Cursor sessions (Codex/Claude/Gemini/etc.) via `agentgrep find --json`, filtered to the window and de-duped against the SQLite rows; the bucket is then titled **Agent sessions** and each cross-agent row carries its `agent` label. With agentgrep absent (the common case), the step silently stays Cursor-only and notes `agentgrep (cross-agent): not installed`.
+
 ---
 
 ## Notes on the examples
