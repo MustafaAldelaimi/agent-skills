@@ -38,7 +38,8 @@ The skill is the **factual** companion to:
 - **Likely-personal sessions are excluded by default.** Sessions whose title or first query match personal keywords (job/CV/HR/contract/review/etc.) are listed separately and only included on an explicit tick — never auto-included.
 - **Extra consent before saving session content.** When a save is proposed (`for-journal` / `standalone-with-save`) and any included session is flagged-personal, require a second explicit acknowledgement before its content is written to `docs/work/activity/*.md` (that path may be a git repo).
 - **Never read full transcripts into the parent.** Transcripts can run to hundreds of messages; summarise each selected session in a readonly subagent and ingest only the short summary (see Step 3, Cursor sessions).
-- **The agentgrep backend is optional and non-fatal.** It only ever widens coverage to other agents; if it is missing, prereq-blocked (needs Python >=3.14), or errors, fall back silently to the SQLite + filesystem path and note it — never fail the run because the optional backend is unavailable.
+- **The agentgrep backend is optional and non-fatal.** It only ever widens coverage to other agents; if it errors or is prereq-blocked (needs Python >=3.14), fall back to the SQLite + filesystem path and note it — never fail the run because the optional backend is unavailable.
+- **Installing agentgrep is consent-gated and one-time.** When it is absent and the user opted into sessions, *offer* to install it, but run the install **only on an explicit Yes** — never automatically. This is the skill's sole non-read-only action; it is remembered in the skill-local cache (`agentgrep: installed | declined | ask`) so the prompt never repeats, and it leaves the read-only guarantee over GitHub/Linear/Slack/transcript data untouched.
 
 ## Workflow (5 steps)
 
@@ -146,9 +147,11 @@ sqlite3 "file:$DB?immutable=1" \
 
 The parent ingests only these summaries — never the raw `.jsonl`.
 
-**Optional cross-agent backend ([agentgrep](https://agentgrep.org)).** If the `agentgrep` MCP server is available **or** the `agentgrep` CLI is on `PATH`, widen the bucket beyond Cursor IDE to every agent it indexes (Codex, Claude Code, Cursor CLI, Gemini, Grok, Pi, OpenCode). It is read-only and entirely optional — when absent or erroring, fall back **silently** to the SQLite + filesystem path above (Cursor IDE only) and never fail the run on its account.
+**Optional cross-agent backend ([agentgrep](https://agentgrep.org)).** If the `agentgrep` MCP server is available **or** the `agentgrep` CLI is on `PATH`, widen the bucket beyond Cursor IDE to every agent it indexes (Codex, Claude Code, Cursor CLI, Gemini, Grok, Pi, OpenCode). It is read-only and entirely optional — when erroring it falls back to the SQLite + filesystem path above (Cursor IDE only) and never fails the run; when simply not installed, **offer to install it** (see below) rather than skipping silently.
 
-- **Detect:** `command -v agentgrep` (CLI) or the presence of the agentgrep MCP server. If neither, skip this sub-step.
+- **Detect:** `command -v agentgrep` (CLI) or the presence of the agentgrep MCP server.
+- **If absent and the user opted into sessions, offer to install it** — one-time, interactive modes only (never in `for-context`). Prompt: install for cross-agent coverage, or continue Cursor-only. **Install runs only on an explicit Yes — never automatically.** Remember the choice in the skill-local cache (`me-identity.md`: `agentgrep: installed | declined | ask`) so it never nags again.
+  - Install: `uv tool install agentgrep` (uv manages the Python `>=3.14` requirement; run `uv python install 3.14` first if needed). If `uv` itself is missing, surface that prereq and ask before running uv's installer. On success, continue with the cross-agent path; on decline or failure, fall back Cursor-only and note it in `Notes`.
 - **Enumerate (window-list, not keyword):** `agentgrep find --json` with no query term streams all records; filter them to the window by their timestamp client-side. (agentgrep's `search`/`grep` are term-driven — use `find` for "everything in window".)
 - Each record carries `agent`, `title`, `path`. Label each session with its `agent`.
 - **Dedupe against the SQLite rows:** a Cursor IDE record from agentgrep and the same `composerData` row are one session — prefer the SQLite title (the exact sidebar name) and drop the agentgrep duplicate. Non-Cursor agents add net-new sessions.
@@ -227,7 +230,7 @@ Notes
 - Linear-comment-only items NOT included (MCP limitation - see SKILL).
 - Slack relevance filter: <N work messages kept; M social/logistics omitted (DM/social tier only; work channels verbatim)>.
 - Cursor sessions: <not requested | opted in: N of M in-window sessions included; K flagged-personal excluded>.
-- agentgrep (cross-agent): <not installed | used: P agents covered | configured but unavailable - fell back to SQLite/Cursor-only>.
+- agentgrep (cross-agent): <not requested | used: P agents covered | installed this run | declined - Cursor-only | configured but unavailable - fell back to SQLite/Cursor-only>.
 ```
 
 ## Interview stages
@@ -240,6 +243,7 @@ Pause and ask the user (use `AskQuestion` when available; otherwise ask conversa
 | **Identity cache missing or stale** | Confirm your Slack display name + GitHub login so I can resolve "me" correctly |
 | **Save proposed by caller** (`for-journal` or `standalone-with-save`) | Mid-conversation Yes/No confirmation prompt (see Step 5) |
 | **Cursor sessions requested** (user opts in for the run) | Titled multi-select of in-window sessions (default none; flagged-personal shown in a separate excluded group) |
+| **Sessions opted in + agentgrep not installed** (interactive modes only) | Offer to install agentgrep for cross-agent coverage: Install (explicit Yes) / Continue Cursor-only / Don't ask again. Remember the choice; never auto-install |
 | **Flagged-personal session included in a save mode** | Second explicit acknowledgement before its content is written to `docs/work/activity/*.md` |
 
 `standalone` and `for-context` never propose a save → no save prompt at all.
