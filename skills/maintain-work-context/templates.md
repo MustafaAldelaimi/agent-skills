@@ -32,10 +32,13 @@
 
 ## Done (recent)
 
-<!-- Attribute every item; tag your own with (me) so your contribution stays distinguishable. -->
+<!-- Attribute every item by evidence; tag your own (me: <role>); never log a teammate's solo work as yours.
+     Roles: authored | reviewed | drove | investigated | coordinated | advised | paired.
+     Mark brag-worthy items [win] and capture [impact:] [stakeholders:] [evidence:] while sources are fresh. -->
 
-- YYYY-MM-DD — (me): <outcome>
-- YYYY-MM-DD — <teammate>: <outcome>
+- YYYY-MM-DD — (me: authored) [win] <outcome> [impact: …] [stakeholders: …] [evidence: PR/ticket/Slack link]
+- YYYY-MM-DD — (me: reviewed; <teammate>: authored): <shared outcome, your slice noted>
+- YYYY-MM-DD — <teammate>: <their outcome>  <!-- not yours; logged for context -->
 
 ## Next
 
@@ -61,7 +64,13 @@
 
 ## Done
 
-- <completed item>
+- (me: <role>) <completed item>   <!-- attribute; teammates' work under their name -->
+
+## Wins (brag-worthy)
+
+<!-- Only your own, while sources are fresh. Feeds your brag/recap system. -->
+
+- (me: <role>) [win] <what + why it mattered> [impact: …] [stakeholders: …] [evidence: PR/ticket/Slack link]
 
 ## Blockers
 
@@ -116,9 +125,9 @@
 
 ## Done (recent)
 
-- 2026-05-26 — (me): Added webhook integration tests
-- 2026-05-25 — Priya: New pipeline writer merged (BILL-205)
-- 2026-05-24 — (me): Drafted cutover runbook
+- 2026-05-26 — (me: authored) [win] Webhook idempotency fix [impact: eliminated duplicate invoices] [stakeholders: Billing + Payments squads] [evidence: BILL-210, PR #310]
+- 2026-05-25 — (me: reviewed; Priya: authored): New pipeline writer merged — reviewed, flagged retry edge case (BILL-205)
+- 2026-05-24 — (me: authored) Drafted cutover runbook
 
 ## Next
 
