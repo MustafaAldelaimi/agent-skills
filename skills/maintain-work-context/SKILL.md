@@ -18,6 +18,11 @@ Keep a **two-layer** work journal agents can read and update:
 
 Agents only know what you put in these files. Mirror the user's Notes-app habit — structured, short, current.
 
+**Team projects.** When the work is shared, `PROJECT.md` is the **team-aware** layer (everyone's workstreams + status, synced from the tracker), while the daily journal stays the **user's personal record**. Two hard requirements:
+
+- **Tracker is the source of truth for status.** When the project is tracked in Linear, reconcile `PROJECT.md` against Linear at session start (see Phase 2) — do not trust stale files for what is "done".
+- **The user's own contribution must always be distinguishable.** This documentation doubles as the user's professional-development record, so it is useless if their individual work cannot be told apart from teammates'. Attribute every status/`Done`/team item to its owner, and tag the user's own with **`(me)`**. The daily journal is first-person = the user's work.
+
 ## When to Apply
 
 - User asks to set up, read, or update work context / live doc / project journal
@@ -42,8 +47,9 @@ Do not bootstrap inside `node_modules`, `.git`, or unrelated monorepo packages u
 
 Before non-trivial work, read in order:
 
-1. `docs/work/PROJECT.md` — goal, current focus, constraints, open questions
+1. `docs/work/PROJECT.md` — goal, current focus, constraints, open questions, team status
 2. Journal files in `docs/work/journal/` — sort by filename (date) and read the most recent one or two; use the current session date to identify today's file
+3. **Reconcile with the tracker (team projects).** If the project is tracked in Linear, fetch the project's current issues + statuses (Linear MCP `list_issues` / `get_project` for the project) and update `PROJECT.md` (**Current focus**, **Done**, **Next**, **Team status**) to match reality — including teammates' progress. Linear is the source of truth for status; flag drift ("file said X, Linear says Y") rather than silently trusting stale files. Keep each item attributed and the user's own tagged `(me)`.
 
 If files are missing, offer Phase 1 bootstrap instead of guessing project state.
 
@@ -61,9 +67,12 @@ Update **only what changed**. Keep `PROJECT.md` under ~2 pages.
 | **Constraints / decisions** | A choice was made that future sessions must respect |
 | **Open questions** | New unknowns; remove when resolved |
 | **Done (recent)** | Meaningful progress; keep last ~2 weeks, archive older items to journal |
+| **Team status** | A teammate's (or your) workstream/ticket changed status — sync from Linear |
 | **Next** | Concrete next actions |
 
 Move stale "Done" bullets into the daily journal when trimming.
+
+**Attribution (mandatory on team projects).** Every `Done` and `Team status` item names its owner; tag the user's own with `(me)`. Keep teammates' work and the user's clearly separable so the user's individual contribution is always extractable (e.g. for reviews / professional development). The daily journal records the user's own work in the first person.
 
 ### Daily journal — append or create today's file
 
@@ -122,12 +131,12 @@ If the user uses a different path (e.g. `.cursor/work/`), follow their conventio
 
 Only when the user asks — do not sync by default.
 
-### Linear (month-long project)
+### Linear (team-tracked projects — status source of truth)
 
-If the workflow is tracked in Linear:
+When the project is tracked in Linear, **sync from Linear**, don't just mirror to it:
 
-1. Find or create a **Project** via Linear MCP (`list_projects`, `save_project`).
-2. Add the Linear project URL to `PROJECT.md` → **Links**.
+1. Find the **Project** via Linear MCP (`list_projects` / `get_project`); add its URL to `PROJECT.md` → **Links**.
+2. At session start (Phase 2) and when updating, pull current issues + statuses (`list_issues` for the project) and reconcile `PROJECT.md` **Done**, **Next**, **Current focus**, and the **Team status** table. Attribute each item's owner; tag the user's own `(me)`. This is how teammates' progress (e.g. a ticket they closed) enters the context without the user having to relay it.
 3. Optionally mirror **Next** items as Linear issues (`save_issue`) — tickets are tasks; `PROJECT.md` stays the narrative layer.
 
 ### claw-work-activity (factual feed for the journal)
@@ -139,6 +148,8 @@ If installed, [`claw-work-activity`](../claw-work-activity/) produces a timestam
 - **Concise over complete** — future agents skim; bullets beat paragraphs
 - **Current over historical** — history lives in dated journals
 - **Decisions explicit** — "we chose X because Y", not implied from chat
+- **Tracker is source of truth for status** — on team projects, reconcile `PROJECT.md` against Linear at session start; never assume status from memory or stale files
+- **Attribute everything; keep the user's work distinguishable** — tag the user's own items `(me)`; the journal is their personal professional-development record. If individual contribution can't be told apart from teammates', the doc has failed its purpose
 - **No secrets** — no tokens, passwords, or private credentials in work files
 - **No solution prescriptions in journal** — log what happened and what's next, not implementation essays
 

@@ -21,13 +21,25 @@
 
 - <unknown>
 
+## Team status (synced from Linear)
+
+<!-- Team projects only. Reconcile from Linear at session start. Tag your rows (me). -->
+
+| Workstream | Owner | Ticket | Status | Updated |
+|------------|-------|--------|--------|---------|
+| <area> | (me) | TEAM-123 | <status> | YYYY-MM-DD |
+| <area> | <teammate> | TEAM-124 | <status> | YYYY-MM-DD |
+
 ## Done (recent)
 
-- YYYY-MM-DD: <outcome>
+<!-- Attribute every item; tag your own with (me) so your contribution stays distinguishable. -->
+
+- YYYY-MM-DD — (me): <outcome>
+- YYYY-MM-DD — <teammate>: <outcome>
 
 ## Next
 
-- [ ] <concrete action>
+- [ ] <concrete action> (<owner / (me)>)
 
 ## Links
 
@@ -40,6 +52,8 @@
 
 ```markdown
 # YYYY-MM-DD
+
+> Personal log — first person = my work (this is the professional-development record).
 
 ## Plan
 
@@ -92,15 +106,24 @@
 
 - Do we backfill failed events from April?
 
+## Team status (synced from Linear)
+
+| Workstream | Owner | Ticket | Status | Updated |
+|------------|-------|--------|--------|---------|
+| Webhook idempotency | (me) | BILL-210 | In progress | 2026-05-26 |
+| New pipeline writer | Priya | BILL-205 | Done | 2026-05-25 |
+| Cutover runbook | (me) | BILL-212 | In review | 2026-05-24 |
+
 ## Done (recent)
 
-- 2026-05-26: Added webhook integration tests
-- 2026-05-24: Drafted cutover runbook
+- 2026-05-26 — (me): Added webhook integration tests
+- 2026-05-25 — Priya: New pipeline writer merged (BILL-205)
+- 2026-05-24 — (me): Drafted cutover runbook
 
 ## Next
 
-- [ ] PR for idempotency fix
-- [ ] Review runbook with on-call
+- [ ] PR for idempotency fix ((me))
+- [ ] Review runbook with on-call ((me))
 
 ## Links
 
