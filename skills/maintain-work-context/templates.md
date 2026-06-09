@@ -15,9 +15,14 @@
 
 ## Constraints / decisions
 
-- <decision>: <brief rationale>
+<!-- Every decision links to its source: Linear issue/comment, GitHub PR/commit/line, or Slack permalink.
+     The user must have been briefed and agreed before it lands here. No link ⇒ tag [evidence: none — unverified]. -->
+
+- <decision>: <brief rationale> — decided by <who> ([Slack/Linear/PR ↗]); [evidence: <link>]
 
 ## Open questions
+
+<!-- When resolved, move to Constraints / decisions WITH the deciding link (ticket/PR/Slack). -->
 
 - <unknown>
 
@@ -34,7 +39,9 @@
 
 <!-- Attribute every item by evidence; tag your own (me: <role>); never log a teammate's solo work as yours.
      Roles: authored | reviewed | drove | investigated | coordinated | advised | paired.
-     Mark brag-worthy items [win] and capture [impact:] [stakeholders:] [evidence:] while sources are fresh. -->
+     EVERY item carries a primary-source link (Linear issue/comment, GitHub PR/commit/line, or Slack permalink);
+     no link ⇒ [evidence: none — unverified]. Mark brag-worthy items [win] and capture [impact:] [stakeholders:]
+     [evidence:] while sources are fresh. -->
 
 - YYYY-MM-DD — (me: authored) [win] <outcome> [impact: …] [stakeholders: …] [evidence: PR/ticket/Slack link]
 - YYYY-MM-DD — (me: reviewed; <teammate>: authored): <shared outcome, your slice noted>
@@ -64,7 +71,9 @@
 
 ## Done
 
-- (me: <role>) <completed item>   <!-- attribute; teammates' work under their name -->
+<!-- Attribute (teammates' work under their name) and link the source. Each item: [evidence: Linear/PR/Slack link] (or [evidence: none — unverified]). -->
+
+- (me: <role>) <completed item> [evidence: <link>]
 
 ## Wins (brag-worthy)
 
@@ -108,8 +117,8 @@
 
 ## Constraints / decisions
 
-- Keep old pipeline read-only until cutover day — no dual writes
-- Use existing Stripe event IDs as idempotency keys
+- Keep old pipeline read-only until cutover day — no dual writes — decided by Priya + (me) ([Slack ↗]); [evidence: BILL-201 comment ↗]
+- Use existing Stripe event IDs as idempotency keys — [evidence: PR #298 ↗]
 
 ## Open questions
 
