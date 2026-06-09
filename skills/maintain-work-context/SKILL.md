@@ -2,9 +2,12 @@
 name: maintain-work-context
 description: >
   Bootstrap and maintain a live project work journal so AI agents stay as
-  context-aware as the user. Use when the user wants to track daily tasks,
-  month-long projects, work logs, living documentation, session handoff, or
-  asks to set up, read, or update PROJECT.md / work context files.
+  context-aware as the user. Every logged decision is evidence-based and
+  verifiable (links to Linear tickets/comments, GitHub PRs, or Slack
+  messages), and the user is briefed on each decision in a short, skimmable
+  walkthrough before it is recorded. Use when the user wants to track daily
+  tasks, month-long projects, work logs, living documentation, session
+  handoff, or asks to set up, read, or update PROJECT.md / work context files.
 ---
 
 # Maintain Work Context
@@ -30,6 +33,41 @@ Agents only know what you put in these files. Mirror the user's Notes-app habit 
 - **Attribute from evidence, not memory:** ownership comes from the source of truth (Linear assignee, PR author/reviewer, Slack author). If unclear, tag `(contributed — verify)` rather than claiming it.
 - **Capture wins + evidence at the time.** When something is brag-worthy, mark it `[win]` and record, while sources are fresh, `[impact: …]`, `[stakeholders: …]`, `[evidence: <PR/ticket/Slack links>]`. Reconstruction under review pressure is lossy and primary sources decay.
 - **Feeder, not a second brag doc.** These role-qualified, evidence-linked `(me)` items are the source material for the user's existing brag/recap system — especially non-code work (discovery, decisions, cross-team, AI-augmented investigation) that PR/ticket scrapers miss. Do not write or duplicate the brag doc here.
+
+## Evidence-based & verifiable (every logged item is checkable)
+
+Everything written into `PROJECT.md` or the journal — decisions, `Done` / `Team status` items, resolved questions, blockers — must be **traceable to a primary source** so a future agent (or reviewer) can verify it without trusting anyone's memory. Attach a link, not a paraphrase.
+
+- **Link the source, by type:**
+  - **Linear** — the issue (`https://linear.app/<org>/issue/TEAM-123`) or a specific **comment permalink** when the decision was made in-thread.
+  - **GitHub** — the PR (`.../pull/123`), a commit, or a **file-at-line permalink** (`.../blob/<sha>/path#L10`) for code / schema / contract facts.
+  - **Slack** — the **message permalink** (`https://<org>.slack.com/archives/<channel>/p<ts>`) for verbal/async decisions and sign-offs.
+- **One decision, one anchor.** A decision bullet with no link is a liability: record `[evidence: none — unverified]` so the gap is visible instead of being read as fact. Never quietly promote an unverified claim to a stated fact.
+- **Cite the source of truth, not a description of it.** Prefer the ticket / PR / schema over a TechDoc or a summary — docs drift (see `fetch-multiverse-techdocs`). When a doc disagrees with the code/ticket, link the code/ticket.
+- **Decisions name who decided + where:** e.g. `Decided X (Jamal, [Slack ↗]); confirmed against [TEAM-123 ↗]`.
+- **Quote sparingly, link always.** A one-line quote is fine for colour, but the link is what makes it checkable.
+
+This makes the journal double as an audit trail: the user's brag/recap system can lift any `(me)` item straight into a review with its receipts already attached.
+
+## Keep the user in sync — brief the decision, then log it
+
+Treat the user as **time-poor and context-light relative to you**: they have not read the threads, schemas, or tickets you just did, and they will not wade through a wall of text. Before recording any non-trivial decision, **walk them through it in a glanceable brief and get a quick agree** — never log a decision the user has not signed off.
+
+A decision brief is short and skimmable:
+
+1. **The question** — one line, plain language ("deprecate the old event, or version-bump it?").
+2. **The options** — 2–4 bullets, each with its one-line consequence.
+3. **The evidence** — a link next to each claim (Linear / PR / Slack), one line each, not a paragraph.
+4. **The recommendation** — your pick + the single main reason, stated first and loudest.
+5. **The ask** — "sound right?" or a yes/no, so agreeing is effortless.
+
+Rules of thumb:
+
+- **Lead with the answer**, then the why — don't make them read to the bottom for the conclusion.
+- **One or two lines per step**, plain language, no jargon without a gloss. Assume they skim.
+- **Evidence inline at every step** — a claim they can't click is a claim they must take on faith.
+- **Confirm before committing.** Only after the user agrees does it enter `PROJECT.md` / the journal — then log it *with* the same evidence links and tag the user's role `(me: decided | advised | investigated | …)`.
+- If the user corrects you, the correction **and its source** is what gets logged.
 
 ## When to Apply
 
@@ -66,6 +104,8 @@ Summarize back briefly only when the user asks to "catch up" or context is ambig
 ## Phase 3: Update Context (session end or on request)
 
 Update **only what changed**. Keep `PROJECT.md` under ~2 pages.
+
+> Before logging any decision here, run the **Keep the user in sync** brief and get agreement, and attach a primary-source link per **Evidence-based & verifiable**. No unverified or unconfirmed decisions go into the files.
 
 ### PROJECT.md — touch these sections
 
@@ -153,6 +193,8 @@ If installed, [`claw-work-activity`](../claw-work-activity/) produces a timestam
 
 ## Quality Rules
 
+- **Verifiable over asserted** — every decision / `Done` / status item carries a primary-source link (Linear ticket or comment, GitHub PR/commit/line, or Slack permalink); if none exists, mark `[evidence: none — unverified]` rather than stating it as fact (see **Evidence-based & verifiable**)
+- **Brief the user before logging** — walk through every non-trivial decision in a short, evidence-linked, skimmable brief (question → options → evidence → recommendation → ask) and get a quick agree *before* it enters the files (see **Keep the user in sync**)
 - **Concise over complete** — future agents skim; bullets beat paragraphs
 - **Current over historical** — history lives in dated journals
 - **Decisions explicit** — "we chose X because Y", not implied from chat
