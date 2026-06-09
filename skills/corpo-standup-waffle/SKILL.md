@@ -68,12 +68,25 @@ For each issue, capture: `id`, `title`, `status` (Done / In Progress / In Review
 
 Anything **blocked, owned by another team, or stalled** is prime "waiting on…" / "de-risking" material — promote it.
 
+### Step 2.5 — Pull cross-project dependencies (auto, read-only)
+
+Always invoke [`check-cross-project-dependencies`](../check-cross-project-dependencies/) in **`auto` mode**. It returns a read-only risk table for work this project depends on but other projects/teams own. Use its rows as first-class candidates alongside Linear:
+
+- `at-risk` / `blocking` / `untracked` rows → promote into the **In flight / de-risking** section ("waiting on TEAM-200 — owned by <other-team>, not started, due before our deadline") and the **Need to loop in / chasing** section (the owning team becomes a stakeholder with the row's `Suggested next actions` as the ask).
+- `on-track` rows → mention only if the standup audience benefits from hearing "upstream is on track"; otherwise omit.
+- `satisfied` rows → drop.
+
+Treat each dependency's owning ticket id (or `<other-project>/<dep-slug>` when untracked) as an item identity for the Step 4 tri-state filter, so "still waiting on TEAM-200" doesn't get re-announced as new on day two.
+
+If `check-cross-project-dependencies` isn't installed, skip silently — no `PROJECT.md` damage is done by missing it.
+
 ### Step 3 — Identify stakeholders to drag in
 
 Build the chase-list as the union of:
 
 - PROJECT.md **Cross-team / ownership** + **Heads-ups** + **Open questions** owners + **Next** outreach owners.
 - Linear assignees of blocking/other-team issues; Linear project members not on our team.
+- Owning team(s) of any **`at-risk` / `blocking` / `untracked`** row from Step 2.5's cross-project dependency report.
 
 For each stakeholder, resolve **Slack channel** and **named person + outstanding ask** via the **org-map cache first**:
 
@@ -205,3 +218,4 @@ Within this skill:
 Upstream skill (optional, recommended when installed):
 
 - [`claw-work-activity`](../claw-work-activity/) — produces the timestamped activity report this skill consumes in Step 1 (invoked in `for-context` mode → chat-only, no save prompt). Also one input source for state-change detection on `in-flight` items.
+- [`check-cross-project-dependencies`](../check-cross-project-dependencies/) — produces the read-only cross-project risk table this skill consumes in Step 2.5 (invoked in `auto` mode → no prompt). At-risk/blocking/untracked rows feed *In flight / de-risking* and *Need to loop in / chasing*.

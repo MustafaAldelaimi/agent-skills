@@ -26,6 +26,18 @@
 
 - <unknown>
 
+## Dependencies (cross-project)
+
+<!-- Work owned by OTHER Linear projects / teams that this project assumes.
+     Source from `check-cross-project-dependencies` (read-only audit; never auto-writes here).
+     Risk values: satisfied | on-track | at-risk | blocking | untracked.
+     Anything from `Constraints / decisions` that depends on tickets/events owned by another project
+     belongs here as its own row — do NOT state it as fact in `Constraints / decisions`. -->
+
+| Dependency | Owning project / team | Ticket(s) | Our assumption | Status | Risk | Checked |
+|------------|------------------------|-----------|----------------|--------|------|---------|
+| <one-line label> | <project> / <team> | TEAM-123 | "<≤25 words>" | <Linear state> | satisfied | YYYY-MM-DD |
+
 ## Team status (synced from Linear)
 
 <!-- Team projects only. Reconcile from Linear at session start. Tag your rows (me). -->
@@ -123,6 +135,13 @@
 ## Open questions
 
 - Do we backfill failed events from April?
+
+## Dependencies (cross-project)
+
+| Dependency | Owning project / team | Ticket(s) | Our assumption | Status | Risk | Checked |
+|------------|------------------------|-----------|----------------|--------|------|---------|
+| New invoice number scheme live in customer-portal | Customer Portal Migration / Front-end | CP-412 | "Cutover assumes portal already shows new IDs" | In Review | on-track | 2026-05-26 |
+| Stripe webhook v2 enabled in prod | (untracked) / Payments | — | "Old webhook deprecated by cutover day" | — | untracked | 2026-05-26 |
 
 ## Team status (synced from Linear)
 
