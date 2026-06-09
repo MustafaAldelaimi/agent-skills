@@ -93,9 +93,10 @@ Do not bootstrap inside `node_modules`, `.git`, or unrelated monorepo packages u
 
 Before non-trivial work, read in order:
 
-1. `docs/work/PROJECT.md` — goal, current focus, constraints, open questions, team status
+1. `docs/work/PROJECT.md` — goal, current focus, constraints, open questions, team status, **Dependencies (cross-project)** if present
 2. Journal files in `docs/work/journal/` — sort by filename (date) and read the most recent one or two; use the current session date to identify today's file
 3. **Reconcile with the tracker (team projects).** If the project is tracked in Linear, fetch the project's current issues + statuses (Linear MCP `list_issues` / `get_project` for the project) and update `PROJECT.md` (**Current focus**, **Done**, **Next**, **Team status**) to match reality — including teammates' progress. Linear is the source of truth for status; flag drift ("file said X, Linear says Y") rather than silently trusting stale files. Keep each item attributed and the user's own tagged `(me)`.
+4. **Reconcile cross-project dependencies (ask-first).** If [`check-cross-project-dependencies`](../check-cross-project-dependencies/) is installed, offer to run it: *"Run a cross-project dependency check now? (audits assumptions in `PROJECT.md` against other Linear projects' tickets — read-only)"*. On **Yes**, invoke it in `ask-first` mode (read-only — the skill never writes), then on the user's consent sync its risk table into `PROJECT.md`'s **Dependencies (cross-project)** section (status, risk, owning project, last-checked). On **No**, skip and continue with files-as-read. The audit catches assumption-language in `Constraints / decisions` / `Open questions` / `Heads-ups` that implicitly relies on work owned by other projects/teams. **Never auto-update `PROJECT.md` without user consent.**
 
 If files are missing, offer Phase 1 bootstrap instead of guessing project state.
 
@@ -114,6 +115,7 @@ Update **only what changed**. Keep `PROJECT.md` under ~2 pages.
 | **Current focus** | Task or priority changed |
 | **Constraints / decisions** | A choice was made that future sessions must respect |
 | **Open questions** | New unknowns; remove when resolved |
+| **Dependencies (cross-project)** | A new upstream commitment surfaced, or an existing one changed status/risk (sync from `check-cross-project-dependencies` report on user Yes) |
 | **Done (recent)** | Meaningful progress; keep last ~2 weeks, archive older items to journal |
 | **Team status** | A teammate's (or your) workstream/ticket changed status — sync from Linear |
 | **Next** | Concrete next actions |
@@ -191,6 +193,10 @@ When the project is tracked in Linear, **sync from Linear**, don't just mirror t
 
 If installed, [`claw-work-activity`](../claw-work-activity/) produces a timestamped activity report from git/GitHub, Linear, and Slack. When invoked in `for-journal` mode during Phase 3, it proposes saving `docs/work/activity/<today>.md` (gated on a Yes/No confirmation prompt). The journal's `## Done` block then narrates that factual file rather than relying on agent recall.
 
+### check-cross-project-dependencies (audit upstream commitments)
+
+When PROJECT.md cites work owned by **other** Linear projects or teams (events being deprecated elsewhere, an upstream service migration finishing, another team's ticket landing by our launch), invoke [`check-cross-project-dependencies`](../check-cross-project-dependencies/) in `ask-first` mode (Phase 2 step 4 already does this on session start). The skill is strictly read-only and produces a risk table (`satisfied / on-track / at-risk / blocking / untracked`); on user Yes, sync the table into `PROJECT.md`'s **Dependencies (cross-project)** section. **The skill never writes — that update is this skill's job, only with user consent.** Re-run whenever a new decision/constraint cites external work.
+
 ## Quality Rules
 
 - **Verifiable over asserted** — every decision / `Done` / status item carries a primary-source link (Linear ticket or comment, GitHub PR/commit/line, or Slack permalink); if none exists, mark `[evidence: none — unverified]` rather than stating it as fact (see **Evidence-based & verifiable**)
@@ -199,6 +205,7 @@ If installed, [`claw-work-activity`](../claw-work-activity/) produces a timestam
 - **Current over historical** — history lives in dated journals
 - **Decisions explicit** — "we chose X because Y", not implied from chat
 - **Tracker is source of truth for status** — on team projects, reconcile `PROJECT.md` against Linear at session start; never assume status from memory or stale files
+- **Other teams' work = dependencies, not facts** — anything in `Constraints / decisions` / `Open questions` / `Heads-ups` that depends on tickets/events/services owned by another project or team is tracked as a `## Dependencies (cross-project)` row with its own status, not stated as if already true. Use `check-cross-project-dependencies` to verify and flag drift ("file said deprecated, Linear says unstarted") rather than trusting stale assumption-language ("by launch", "will be deprecated", "source of truth =")
 - **Attribute everything; keep the user's work distinguishable** — tag the user's own items `(me: <role>)`; the journal is their personal professional-development record. If individual contribution can't be told apart from teammates', the doc has failed its purpose
 - **Never claim teammates' work** — attribute by evidence (Linear assignee / PR author / Slack author); log a teammate's solo work under their name, and for shared work record the user's specific slice and name collaborators
 - **Celebrate + evidence wins at the time** — mark brag-worthy items `[win]` with impact / stakeholders / source links while sources are fresh; reconstruction under review pressure is lossy

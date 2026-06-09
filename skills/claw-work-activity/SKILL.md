@@ -161,6 +161,12 @@ The parent ingests only these summaries — never the raw `.jsonl`.
 
 When agentgrep contributes non-Cursor sessions, title the output bucket **Agent sessions** instead of **Cursor sessions**.
 
+### Step 3.5 — Cross-project dependency snapshot (auto, read-only)
+
+If `docs/work/PROJECT.md` exists **and** [`check-cross-project-dependencies`](../check-cross-project-dependencies/) is installed, invoke it in **`auto` mode**. This is a read-only audit — it never writes. Capture its **Summary** line only (counts by risk + deadline reference); discard the full table. The summary becomes a single `Notes`-block line in Step 5 so the activity report doubles as a "state of upstream deps at this point in time" snapshot.
+
+If `PROJECT.md` is missing or the skill isn't installed, skip silently — the activity report stands on its own.
+
 ### Step 4 — Merge + dedupe + sort
 
 - Dedupe across sources by URL or `(source, id)`. A `PullRequestEvent` from `users/<you>/events` and a `gh search prs` hit for the same PR are the same event.
@@ -232,6 +238,7 @@ Notes
 - Slack relevance filter: <N work messages kept; M social/logistics omitted (DM/social tier only; work channels verbatim)>.
 - Cursor sessions: <not requested | opted in: N of M in-window sessions included; K flagged-personal excluded>.
 - agentgrep (cross-agent): <not requested | used: P agents covered | installed this run | declined - Cursor-only | configured but unavailable - fell back to SQLite/Cursor-only>.
+- Cross-project deps: <skipped (no PROJECT.md) | <N> satisfied, <N> on-track, <N> at-risk, <N> blocking, <N> untracked (deadline ref: <YYYY-MM-DD>)>.
 ```
 
 ## Interview stages
@@ -255,6 +262,7 @@ Pause and ask the user (use `AskQuestion` when available; otherwise ask conversa
 |-------|-----------|-------------------------------|
 | [maintain-work-context](../maintain-work-context/) | downstream consumer | `for-journal` (proposes save, prompts user) |
 | [corpo-standup-waffle](../corpo-standup-waffle/) | downstream consumer | `for-context` (chat-only, no prompt) |
+| [check-cross-project-dependencies](../check-cross-project-dependencies/) | upstream (this skill invokes it) | `auto` (Step 3.5; read-only; summary line in `Notes`) |
 
 ## Out of scope (v1)
 
