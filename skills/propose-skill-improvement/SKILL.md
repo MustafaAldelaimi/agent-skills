@@ -9,12 +9,14 @@ description: >
   prevent or shorten the next occurrence — and, on the user's Yes, raise a PR
   against `MustafaAldelaimi/agent-skills` to create or update the target skill.
   Strictly consent-gated: never edits or opens a PR without an explicit Yes.
-  Fires at most once per session, never from a tool error alone (must include
-  the resolution arc), and only when the friction is specific and addressable
-  by a skill change (not a vague "be more careful"). Use when the agent
-  notices it just cracked something after struggling, when it spots a
-  generalisable lesson the user didn't ask for, or when the user asks "what
-  could we change so this is easier next time".
+  No per-session firing cap, but never re-proposes the same (friction, target,
+  change) tuple in the same session (Yes or No — already-said). Never fires
+  from a tool error alone (must include the resolution arc), and only when
+  the friction is specific and addressable by a skill change (not a vague
+  "be more careful"). Use when the agent notices it just cracked something
+  after struggling, when it spots a generalisable lesson the user didn't ask
+  for, or when the user asks "what could we change so this is easier next
+  time".
 ---
 
 # Propose Skill Improvement
@@ -25,7 +27,7 @@ Strictly consent-gated. Strictly skill-focused (not Cursor rules / hooks / proje
 
 ## Hard guardrails (read first)
 
-- **At most one fire per session.** Even with the medium firing bar, two proposals in one session is noise. Drop additional candidates; mention them only if the user explicitly asks "anything else?".
+- **No per-session firing cap. One per friction, full stop.** Fire whenever a candidate clears the quality gate. **Never re-propose the same friction this session** — once a (friction, target, change) tuple has been surfaced, don't surface it again whether the user said Yes or No (same outcome: already-said). The quality gate (specific + addressable + not-already-covered) is what stops noise; same-session dedup is what stops repetition.
 - **Never PR without an explicit Yes.** The brief is presented; the user picks Yes or No. On Yes, raise the PR. On No, do nothing — no retry, no nag, no "are you sure?".
 - **Never fire from a tool error alone.** The signal is the **resolution arc** (struggled → cracked it). A single failed tool call is not enough; the agent needs to have actually overcome the problem in this session, so the lesson is real and the PR has concrete before/after evidence.
 - **Skills only.** The user's intent is `MustafaAldelaimi/agent-skills` content. If the right answer is a Cursor rule or hook, mention it in the brief but do not auto-PR — point them at `create-rule` / `create-hook` instead.
@@ -64,7 +66,7 @@ A candidate clears the gate **only** when all three hold:
 2. **Addressable by a skill change.** Encoding it into `~/agent-skills/skills/<skill>/SKILL.md` would prevent or shorten the friction on the next occurrence. If the answer is "the user just needs to be more careful", abort — that is not a skill problem.
 3. **Not already covered.** Skim the target skill's current `SKILL.md` (and adjacent skills if the lesson straddles two) to confirm the change doesn't duplicate existing guidance. If it does, abort and (optionally) note it in passing — no PR.
 
-One-offs are allowed (medium bar, not high bar) — the user can always say No. But aborts must be silent: an aborted candidate does **not** consume the one-per-session quota.
+One-offs are allowed (medium bar, not high bar) — the user can always say No. Aborts are silent.
 
 ## Workflow (5 steps)
 
@@ -74,7 +76,7 @@ At a sensible session checkpoint (just resolved a sub-problem, just answered a m
 
 - Did Pattern A or Pattern B happen since the last skill-improvement check this session?
 - Is the candidate specific, addressable, and not-already-covered?
-- Has this skill already fired once in this session? (If yes, stop here.)
+- Have you already proposed this specific (friction, target, change) tuple this session? (If yes, drop silently — already-said.)
 
 If any answer is No, **do nothing** and continue with the user's actual task.
 
@@ -92,7 +94,7 @@ Fetch the candidate skill's current `SKILL.md` via `gh api` (or read the local c
 Output exactly this shape — no preamble, no "noticed something":
 
 ```
-Skill-improvement proposal (1/1 this session)
+Skill-improvement proposal
 
 Friction: <one line — what tripped us up, with a chat-history pointer>
   Evidence: <one or two concrete moments from this conversation>
@@ -153,11 +155,11 @@ Return the PR URL to the user.
 
 No retry, no follow-up, no "are you sure?". The user has the context; they decided. Do not log the proposal anywhere — it was a chat-only suggestion.
 
-The one-per-session quota is consumed by **a fire that reached Step 3**, not by Yes/No.
+**Record the (friction, target, change) tuple in session memory** so it isn't surfaced again this session (Yes or No, same outcome — already-said). This is the same-session dedup rule; it's what makes the no-cap policy safe.
 
 ## What this skill is NOT
 
-- **Not a continuous improvement loop.** One fire per session, by design. The signal-to-noise ratio collapses past that.
+- **Not a constant-improvement firehose.** The quality gate (specific + addressable + not-already-covered) is what stops noise; same-session dedup is what stops repetition. If you find yourself proposing a third change in one session, sanity-check whether the gate is actually doing its job — three legit, distinct fires in one session is fine; three near-duplicates is the dedup rule failing.
 - **Not a place to propose Cursor rules / hooks / project code changes.** The skill's PR target is `MustafaAldelaimi/agent-skills` only. If the right answer is a rule or hook, mention it in the brief and point at `create-rule` / `create-hook`; do not raise the PR yourself.
 - **Not a place to vent.** "That was annoying" is not a brief. Every proposal names a concrete edit to a real file.
 - **Not a meta-loop trap.** This skill does not fire on the friction of using this skill itself.
@@ -177,10 +179,10 @@ alwaysApply: true
 At sensible session checkpoints (a sub-problem just resolved, a multi-turn investigation just landed, the user just said "okay / thanks / next"):
 
 1. Internally check whether the resolution arc matched Pattern A (stuck-then-cracked) or Pattern B (unprompted epiphany) — see `~/.cursor/skills/propose-skill-improvement/SKILL.md` for the heuristics.
-2. If yes, AND the candidate is specific + addressable + not-already-covered, run `propose-skill-improvement` once per session.
-3. If the user picks No, drop silently. Never retry.
+2. If yes, AND the candidate is specific + addressable + not-already-covered, AND it isn't a (friction, target, change) tuple already proposed this session, run `propose-skill-improvement`.
+3. If the user picks No, drop silently. Record the tuple as already-said; never re-surface it this session. Never retry.
 
-Skill is consent-gated: no edits, no PRs without explicit user Yes.
+Skill is consent-gated: no edits, no PRs without explicit user Yes. No per-session firing cap — multiple distinct frictions can each fire once.
 ```
 
 Install per the user's convention:
