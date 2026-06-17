@@ -23,7 +23,7 @@ Agents only know what you put in these files. Mirror the user's Notes-app habit 
 
 **Team projects.** When the work is shared, `PROJECT.md` is the **team-aware** layer (everyone's workstreams + status, synced from the tracker), while the daily journal stays the **user's personal record**. Two hard requirements:
 
-- **Tracker is the source of truth for status.** When the project is tracked in Linear, reconcile `PROJECT.md` against Linear at session start (see Phase 2) — do not trust stale files for what is "done".
+- **Tracker is the source of truth for status — except code-landed state.** When the project is tracked in Linear, reconcile `PROJECT.md` against Linear at session start (see Phase 2) — do not trust stale files for what is "done". **Caveat: the Linear workflow column lags the merge.** For any "merged / shipped / landed / deployed" claim, the **GitHub PR is authoritative and routinely leads the ticket** — verify with `gh pr view <n> --repo <org>/<repo> --json state,mergedAt` before recording it, rather than inferring "done" (or "not done") from a ticket still showing *In Review*.
 - **The user's own contribution must always be distinguishable.** This documentation doubles as the user's professional-development record (a feeder for their brag/recap system), so it is useless if their individual work cannot be told apart from teammates'. Attribute every status/`Done`/team item to its owner, and tag the user's own with **`(me)`**. The daily journal is first-person = the user's work.
 
 ### Honest attribution (celebrate the user's work; never claim others')
@@ -204,7 +204,7 @@ When PROJECT.md cites work owned by **other** Linear projects or teams (events b
 - **Concise over complete** — future agents skim; bullets beat paragraphs
 - **Current over historical** — history lives in dated journals
 - **Decisions explicit** — "we chose X because Y", not implied from chat
-- **Tracker is source of truth for status** — on team projects, reconcile `PROJECT.md` against Linear at session start; never assume status from memory or stale files
+- **Tracker is source of truth for status — except code-landed state** — on team projects, reconcile `PROJECT.md` against Linear at session start; never assume status from memory or stale files. For "merged/shipped/landed" claims, verify against the **GitHub PR** (`gh pr view --json state,mergedAt`), which leads the Linear ticket — never write "merged" off a ticket still showing *In Review*
 - **Other teams' work = dependencies, not facts** — anything in `Constraints / decisions` / `Open questions` / `Heads-ups` that depends on tickets/events/services owned by another project or team is tracked as a `## Dependencies (cross-project)` row with its own status, not stated as if already true. Use `check-cross-project-dependencies` to verify and flag drift ("file said deprecated, Linear says unstarted") rather than trusting stale assumption-language ("by launch", "will be deprecated", "source of truth =")
 - **Attribute everything; keep the user's work distinguishable** — tag the user's own items `(me: <role>)`; the journal is their personal professional-development record. If individual contribution can't be told apart from teammates', the doc has failed its purpose
 - **Never claim teammates' work** — attribute by evidence (Linear assignee / PR author / Slack author); log a teammate's solo work under their name, and for shared work record the user's specific slice and name collaborators
