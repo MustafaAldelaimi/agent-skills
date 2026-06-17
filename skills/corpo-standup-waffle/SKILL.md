@@ -116,7 +116,7 @@ Build a candidate item list from Steps 1–3 (PROJECT.md + journal + activity re
 
 Surviving candidates then go through [`phrasebook.md`](phrasebook.md) to transform facts → waffle. Section bias:
 
-- **Done / progressed** — small wins spun as substantial; verify before spinning ("decided X" not "shipped X" unless code merged).
+- **Done / progressed** — small wins spun as substantial; verify before spinning ("decided X" not "shipped X" unless code merged). **Check the GitHub PR state for any "merged/shipped" line (`gh pr view --json state,mergedAt`) — not the Linear ticket status, whose workflow column lags the merge and will mis-state reality.**
 - **In flight / de-risking** — foreground unknowns, dependencies, scoping work. Anything Pending/Ready/Blocked in Linear lives here.
 - **Today** — bias toward **low-commitment, high-visibility** actions: chase, socialise, scope, de-risk, align, await sign-off. Avoid promising specific ships.
 - **Need to loop in / chasing** — one line per stakeholder, with channel + last-touch citation.
