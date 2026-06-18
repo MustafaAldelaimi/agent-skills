@@ -22,6 +22,8 @@ Reads real status from `docs/work/PROJECT.md` + the latest journal entries, enri
 
 The spin maximises perceived activity and foregrounds dependencies/stakeholders, so a day with little shipped still has plenty to say. **Always honest about facts, never about volume.**
 
+> **Work-context location (hardcoded).** `docs/work/` lives at `~/Desktop/MV_Dev/docs/work/` — the developer root shared across every repo, never inside a repo (see `maintain-work-context` › *Work-context location*). Every `docs/work/…` path below — `PROJECT.md`, `journal/`, `activity/`, `standup-log/<audience>/` — is shorthand for `~/Desktop/MV_Dev/docs/work/…`.
+
 ## Hard guardrails (read first)
 
 - **Output-only.** Never send, post, reply, draft, or schedule anything. Do **not** call `slack_send_message`, `slack_send_message_draft`, `slack_schedule_message`, Linear `save_*`, `gh pr create`, etc. Only read/list/search/get.

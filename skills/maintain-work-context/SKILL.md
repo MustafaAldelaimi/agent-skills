@@ -16,8 +16,10 @@ Keep a **two-layer** work journal agents can read and update:
 
 | Layer | Horizon | File |
 |-------|---------|--------|
-| **Project context** | ~1 month workflow | `docs/work/PROJECT.md` |
-| **Daily journal** | Today | `docs/work/journal/YYYY-MM-DD.md` |
+| **Project context** | ~1 month workflow | `~/Desktop/MV_Dev/docs/work/PROJECT.md` |
+| **Daily journal** | Today | `~/Desktop/MV_Dev/docs/work/journal/YYYY-MM-DD.md` |
+
+> **Work-context location (hardcoded).** The work-context tree lives in **one shared directory at `~/Desktop/MV_Dev/docs/work/`** — the developer root that holds every repo — and **never inside a repo.** A repo-local `docs/work/` fragments the journal across repos and leaks personal notes into a project. **Every `docs/work/…` path in this skill and in the related skills (`corpo-standup-waffle`, `claw-work-activity`, `check-cross-project-dependencies`) is shorthand for `~/Desktop/MV_Dev/docs/work/…`.** If a `docs/work/` already exists inside a repo from an older run, migrate it up to `~/Desktop/MV_Dev/docs/work/` and delete the in-repo copy.
 
 Agents only know what you put in these files. Mirror the user's Notes-app habit — structured, short, current.
 
@@ -76,18 +78,18 @@ Rules of thumb:
 - User switches focus within a month-long project
 - User says "catch up on what I'm working on" or "update the work log"
 
-## Phase 1: Bootstrap (first time in a repo)
+## Phase 1: Bootstrap (first time)
 
-1. Confirm the repo root (or the directory the user treats as the project home).
+1. Work-context lives at the hardcoded root `~/Desktop/MV_Dev/docs/work/` (see **Work-context location**), shared across every repo — not the current repo.
 2. Create if missing:
    ```
-   docs/work/PROJECT.md
-   docs/work/journal/
+   ~/Desktop/MV_Dev/docs/work/PROJECT.md
+   ~/Desktop/MV_Dev/docs/work/journal/
    ```
 3. If `PROJECT.md` is empty, scaffold from [templates.md](templates.md) using details from the user or conversation.
 4. Offer to add a Cursor rule — see **Phase 5**.
 
-Do not bootstrap inside `node_modules`, `.git`, or unrelated monorepo packages unless the user specifies that package as the project home.
+Never create `docs/work/` inside a repository (`node_modules`, `.git`, or any repo tree) — it always lives at `~/Desktop/MV_Dev/docs/work/`.
 
 ## Phase 2: Read Context (session start)
 
@@ -163,9 +165,9 @@ alwaysApply: true
 
 # Work context
 
-Before non-trivial tasks:
-1. Read `docs/work/PROJECT.md`
-2. Read the most recent one or two files in `docs/work/journal/` if they exist
+Work-context lives outside this repo, at the hardcoded shared root. Before non-trivial tasks:
+1. Read `~/Desktop/MV_Dev/docs/work/PROJECT.md`
+2. Read the most recent one or two files in `~/Desktop/MV_Dev/docs/work/journal/` if they exist
 
 After meaningful progress, decisions, or scope changes:
 - Offer to update `PROJECT.md` and today's journal
@@ -173,7 +175,7 @@ After meaningful progress, decisions, or scope changes:
 Keep updates concise. Do not invent project state — ask the user if context files are missing or stale.
 ```
 
-If the user uses a different path (e.g. `.cursor/work/`), follow their convention and put that path in the rule.
+Because the work-context root is **outside** the repo, this rule must use the absolute `~/Desktop/MV_Dev/docs/work/` path — a bare `docs/work/` would resolve inside the repo and miss it. If the root ever moves, update this path wherever it appears.
 
 `alwaysApply: true` runs on every task in the repo. If that's too noisy, set `alwaysApply: false` and scope it — accepting that cold-start context loading becomes manual.
 

@@ -25,6 +25,8 @@ The skill is the **factual** companion to:
 - `maintain-work-context` (narrative journal — uses this skill's file when present).
 - `corpo-standup-waffle` (spoken standup script — uses this skill's chat output as Done/Progressed feedstock).
 
+> **Work-context location (hardcoded).** `docs/work/` lives at `~/Desktop/MV_Dev/docs/work/` — the developer root shared across every repo, never inside a repo (see `maintain-work-context` › *Work-context location*). `docs/work/activity/…` and `docs/work/PROJECT.md` below are shorthand for `~/Desktop/MV_Dev/docs/work/…`.
+
 ## Hard guardrails (read first)
 
 - **Read-only across every source.** Never call `slack_send_*`, `slack_schedule_message`, Linear `save_*`, `gh pr create`/`gh issue create`/`gh pr review`, or any git command that mutates state (no `commit`, `push`, `tag`, `rebase`).
@@ -36,7 +38,7 @@ The skill is the **factual** companion to:
 - **Slack relevance filter never drops silently.** The channel-aware filter (Step 3) applies **identically** to chat and file, and only ever omits clearly non-work chatter from the DM/social tier — the omitted count is always disclosed in `Notes`, and when unsure you keep the message. Work channels are never filtered.
 - **Cursor sessions are opt-in and read-only.** The bucket is off by default; it is only built when the user explicitly opts in for the run. The Cursor SQLite state DB is opened **read-only/immutable** (`file:...?immutable=1`) — never copied, moved, or written. Transcript `.jsonl` files are read, never modified.
 - **Likely-personal sessions are excluded by default.** Sessions whose title or first query match personal keywords (job/CV/HR/contract/review/etc.) are listed separately and only included on an explicit tick — never auto-included.
-- **Extra consent before saving session content.** When a save is proposed (`for-journal` / `standalone-with-save`) and any included session is flagged-personal, require a second explicit acknowledgement before its content is written to `docs/work/activity/*.md` (that path may be a git repo).
+- **Extra consent before saving session content.** When a save is proposed (`for-journal` / `standalone-with-save`) and any included session is flagged-personal, require a second explicit acknowledgement before its content is written to `~/Desktop/MV_Dev/docs/work/activity/*.md` (the shared work-context root, outside any repo).
 - **Never read full transcripts into the parent.** Transcripts can run to hundreds of messages; summarise each selected session in a readonly subagent and ingest only the short summary (see Step 3, Cursor sessions).
 - **The agentgrep backend is optional and non-fatal.** It only ever widens coverage to other agents; if it errors or is prereq-blocked (needs Python >=3.14), fall back to the SQLite + filesystem path and note it — never fail the run because the optional backend is unavailable.
 - **Installing agentgrep is consent-gated and one-time.** When it is absent and the user opted into sessions, *offer* to install it, but run the install **only on an explicit Yes** — never automatically. This is the skill's sole non-read-only action; it is remembered in the skill-local cache (`agentgrep: installed | declined | ask`) so the prompt never repeats, and it leaves the read-only guarantee over GitHub/Linear/Slack/transcript data untouched.
@@ -194,7 +196,7 @@ Mode detection (in order):
 **Confirmation prompt (only when a save is proposed):**
 
 ```
-About to save this report to docs/work/activity/<YYYY-MM-DD>.md
+About to save this report to ~/Desktop/MV_Dev/docs/work/activity/<YYYY-MM-DD>.md
 (proposed by <caller>). Proceed?
 
 - Yes

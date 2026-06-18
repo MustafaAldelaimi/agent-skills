@@ -26,6 +26,8 @@ Audits assumptions a project makes about work owned by **other Linear projects /
 
 Strictly read-only. The caller decides whether to surface, persist, or escalate the findings.
 
+> **Work-context location (hardcoded).** `docs/work/PROJECT.md` and `docs/work/journal/` resolve under `~/Desktop/MV_Dev/docs/work/` — the developer root shared across every repo, never inside a repo (see `maintain-work-context` › *Work-context location*).
+
 ## Hard guardrails (read first)
 
 - **Read-only across every source.** Never call Linear `save_*`, `slack_send_*`, `slack_schedule_message`, `gh pr create` / `gh issue create`, or any other mutating tool. Only `list_*`, `get_*`, `search_*`, and `gh api` reads.
