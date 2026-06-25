@@ -1,9 +1,10 @@
 ---
 name: raise-pr
-description: >
-  Raise a PR by analyzing branch changes, following the repo's PR template, and
-  creating a succinct PR via the gh CLI. Optionally run Cursor Bugbot review.
-  Use when the user wants to open a pull request or raise a PR.
+description: >-
+  Use whenever the user wants to ship the current branch for review — "raise a
+  PR", "open a PR", "create a pull request", "push and open a PR", or similar.
+  Analyses branch changes, follows the repo's PR template, and creates a
+  succinct PR via the gh CLI, with an optional Cursor Bugbot review loop.
 ---
 
 Raise a PR by:

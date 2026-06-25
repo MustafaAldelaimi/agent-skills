@@ -1,9 +1,11 @@
 ---
 name: fetch-multiverse-techdocs
-description: >
-  Fetch and read Multiverse TechDocs from GitHub (Reef source of truth). Use when
-  the user asks for internal documentation, Reef docs, service setup guides,
-  catalog-info metadata, or event schema docs — or pastes a reef.tech-tools.multiverse.io URL.
+description: >-
+  Use whenever the user wants internal Multiverse documentation — Reef docs,
+  TechDocs, a service's setup guide or README, catalog-info metadata, event
+  schema docs, or when they paste a reef.tech-tools.multiverse.io URL. Fetches
+  and reads the latest TechDocs markdown from GitHub (the Reef source of
+  truth), not the SSO-gated website or stale local clones.
 ---
 
 # Fetch Multiverse TechDocs

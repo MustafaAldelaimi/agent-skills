@@ -1,9 +1,10 @@
 ---
 name: create-linear-ticket
-description: >
-  Create a Linear ticket with codebase context and inferred metadata. Use when
-  the user wants to create a Linear issue, file a bug, raise a ticket, or track
-  work in Linear.
+description: >-
+  Use whenever the user wants to capture work in Linear — create a Linear
+  issue or ticket, file a bug, log a task, or "raise/track this in Linear".
+  Creates a well-formed Linear ticket with codebase context and inferred
+  metadata, describing the problem rather than prescribing a solution.
 ---
 
 # Create Linear Ticket

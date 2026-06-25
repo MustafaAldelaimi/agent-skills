@@ -1,23 +1,21 @@
 ---
 name: check-cross-project-dependencies
-description: >
-  Read-only audit of a project's dependencies on work owned by OTHER Linear
-  projects/teams. Detects them three ways: an explicit `## Dependencies
-  (cross-project)` section in PROJECT.md, `blockedBy`/`relatedTo` links on the
-  active project's issues that point into other projects, and a scan for latent
-  assumption-language in `Constraints / decisions` / `Open questions` /
-  `Heads-ups` ("by launch", "will be deprecated", "once X ships", "source of
-  truth =", "depends on", references to other teams/services/events). Resolves
-  each candidate across all Linear projects, captures owner/team/status/due,
-  and risk-assesses vs the active project's deadline (satisfied / on-track /
-  at-risk / blocking). Strictly read-only — never writes, sends, posts, or
-  saves anything; returns a report the caller decides what to do with. Two
-  invocation modes: `ask-first` (caller prompts the user before running) and
-  `auto` (caller runs it silently as part of its own workflow). Use when the
-  user asks "is anything we depend on at risk", "what other projects gate our
-  launch", "are our upstream deps on track", "verify cross-project
-  dependencies", or when invoked by `maintain-work-context`,
-  `corpo-standup-waffle`, or `claw-work-activity`.
+description: >-
+  Use proactively whenever the work depends on, references, or is gated by
+  another team's or project's work, or when a launch or deadline could slip
+  because of someone else — and whenever the user asks "is anything we depend
+  on at risk", "what gates our launch", "are our upstream deps on track", or
+  "verify cross-project dependencies". Read-only audit of a project's
+  dependencies on work owned by OTHER Linear projects/teams: detects them from
+  an explicit `## Dependencies (cross-project)` section in PROJECT.md, from
+  `blockedBy`/`relatedTo` links pointing into other projects, and from latent
+  assumption-language ("by launch", "will be deprecated", "once X ships",
+  "source of truth =", "depends on", references to other
+  teams/services/events). Resolves each candidate across all Linear projects,
+  captures owner/team/status/due, and risk-assesses vs the deadline (satisfied
+  / on-track / at-risk / blocking). Strictly read-only — never writes, sends,
+  posts, or saves anything. Modes: ask-first and auto. Also invoked by
+  maintain-work-context, corpo-standup-waffle, and claw-work-activity.
 ---
 
 # Check Cross-Project Dependencies

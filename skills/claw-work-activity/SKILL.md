@@ -1,20 +1,20 @@
 ---
 name: claw-work-activity
-description: >
-  Produce a dated, timestamped activity report for a chosen time window by
-  pulling the user's own activity from GitHub (gh), Linear (MCP), and Slack
-  (public + private + DMs; social/logistics noise filtered, omissions
-  disclosed), plus optional local agent-session summaries (opt-in, read-only;
-  Cursor by default, cross-agent via agentgrep when available). Strictly
-  read-only across every
-  source. Save behaviour is caller-proposed and user-confirmed: standalone +
-  for-context invocations are chat-only with no save prompt; for-journal
-  (invoked by maintain-work-context) and standalone-with-save propose a save
-  to docs/work/activity/YYYY-MM-DD.md and require a mid-conversation Yes/No
-  confirmation before writing. Feeds maintain-work-context (journal Done
-  section) and corpo-standup-waffle (Done/Progressed feedstock). Use when the
-  user asks for "what did I do today", "claw my work", "activity report",
-  "since last standup", "timestamped log of my work", or similar.
+description: >-
+  Use whenever the user asks what they did or worked on over any time window —
+  "what did I do today", "claw my work", "activity report", "since last
+  standup", "timestamped log of my work", or anything similar. Produces a
+  dated, timestamped activity report by pulling the user's own activity from
+  GitHub (gh), Linear (MCP), and Slack (public + private + DMs;
+  social/logistics noise filtered, omissions disclosed), plus optional local
+  agent-session summaries (opt-in, read-only; Cursor by default, cross-agent
+  via agentgrep when available). Strictly read-only across every source. Save
+  behaviour is caller-proposed and user-confirmed: standalone and for-context
+  invocations are chat-only with no save prompt; for-journal (invoked by
+  maintain-work-context) and standalone-with-save propose a save to
+  docs/work/activity/YYYY-MM-DD.md and require a mid-conversation Yes/No
+  confirmation before writing. Feeds maintain-work-context and
+  corpo-standup-waffle.
 ---
 
 # Claw Work Activity
