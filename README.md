@@ -14,6 +14,7 @@ Personal Cursor and Claude Code skills — versioned and synced from one repo.
 | [request-review](skills/request-review/) | Draft `#dp-learner` Slack review pings (`:git_rereview_requested:` + PR links) | Custom |
 | [corpo-standup-waffle](skills/corpo-standup-waffle/) | Generate an impromptu standup script from PROJECT.md/journal + read-only Linear/Slack/GitHub — output-only, never sends | Custom |
 | [claw-work-activity](skills/claw-work-activity/) | Produce a dated, timestamped activity report from git/Linear/Slack (public + private + DMs) — caller-proposed, user-confirmed save to `docs/work/activity/YYYY-MM-DD.md` | Custom |
+| [cursor-command-allowlist](skills/cursor-command-allowlist/) | Safely grow Cursor's terminal allowlist in `permissions.json` — adds harmless (read-only / reversible) commands, never destructive/wrapper/bare-multiplexer ones | Custom |
 
 ## Install (Cursor)
 
