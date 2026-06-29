@@ -19,7 +19,11 @@ Keep a **two-layer** work journal agents can read and update:
 | **Project context** | ~1 month workflow | `~/Desktop/MV_Dev/docs/work/PROJECT.md` |
 | **Daily journal** | Today | `~/Desktop/MV_Dev/docs/work/journal/YYYY-MM-DD.md` |
 
-> **Work-context location (hardcoded).** The work-context tree lives in **one shared directory at `~/Desktop/MV_Dev/docs/work/`** — the developer root that holds every repo — and **never inside a repo.** A repo-local `docs/work/` fragments the journal across repos and leaks personal notes into a project. **Every `docs/work/…` path in this skill and in the related skills (`corpo-standup-waffle`, `claw-work-activity`, `check-cross-project-dependencies`) is shorthand for `~/Desktop/MV_Dev/docs/work/…`.** If a `docs/work/` already exists inside a repo from an older run, migrate it up to `~/Desktop/MV_Dev/docs/work/` and delete the in-repo copy.
+> **Work-context location (hardcoded).** The work-context tree lives in **one shared directory at `~/Desktop/MV_Dev/docs/work/`** — the developer root that holds every repo — and **never inside a _project_ repo.** A project-local `docs/work/` fragments the journal across repos and leaks personal notes into a project. **Every `docs/work/…` path in this skill and in the related skills (`corpo-standup-waffle`, `claw-work-activity`, `check-cross-project-dependencies`) is shorthand for `~/Desktop/MV_Dev/docs/work/…`.**
+>
+> **Version it (dedicated private repo).** The work-context root **should be its own dedicated private git repo** (`~/Desktop/MV_Dev/docs/work/.git`), separate from every project repo — this is the one place git *is* wanted, because it makes every overwrite recoverable (`git restore`) and every decision diffable. "Never inside a repo" means never inside a **project** repo; a standalone work-context repo is encouraged. Commit after each update (Phase 3 / Phase 4).
+>
+> **Migrating a stray in-repo `docs/work/` → canonical: merge, never blind-overwrite.** If a `docs/work/` exists inside a project repo from an older run, **first verify whether `~/Desktop/MV_Dev/docs/work/` already exists by `ls`-ing it directly** — the Glob/search tools are workspace-scoped and will falsely report an out-of-workspace canonical path as absent. If the canonical tree exists, it is **authoritative**: merge file-by-file and delete only the in-repo duplicates — **never `mv`/`cp` a stray over the canonical copy** (a blind overwrite can destroy live history irrecoverably when the root isn't yet a git repo). Only when the canonical tree is genuinely absent may you move the in-repo copy up wholesale.
 
 Agents only know what you put in these files. Mirror the user's Notes-app habit — structured, short, current.
 
@@ -86,10 +90,14 @@ Rules of thumb:
    ~/Desktop/MV_Dev/docs/work/PROJECT.md
    ~/Desktop/MV_Dev/docs/work/journal/
    ```
-3. If `PROJECT.md` is empty, scaffold from [templates.md](templates.md) using details from the user or conversation.
-4. Offer to add a Cursor rule — see **Phase 5**.
+3. **Make the root a versioned private repo (recommended).** If `~/Desktop/MV_Dev/docs/work/.git` is absent, offer to back the work-context with a **dedicated private git repo** so the journal is recoverable and diffable:
+   - New: `git -C ~/Desktop/MV_Dev/docs/work init`, add a `.gitignore` (at minimum `.DS_Store`), commit, then `gh repo create <user>/<name> --private --source ~/Desktop/MV_Dev/docs/work --remote origin --push`.
+   - Existing: clone the private repo to `~/Desktop/MV_Dev/docs/work/`.
+   This is the one place git *is* wanted (it is **not** a project repo). Without it, an accidental overwrite is unrecoverable — see **Work-context location**.
+4. If `PROJECT.md` is empty, scaffold from [templates.md](templates.md) using details from the user or conversation.
+5. Offer to add a Cursor rule — see **Phase 5**.
 
-Never create `docs/work/` inside a repository (`node_modules`, `.git`, or any repo tree) — it always lives at `~/Desktop/MV_Dev/docs/work/`.
+Never create `docs/work/` inside a **project** repository (`node_modules`, `.git`, or any project tree) — it always lives at its own root `~/Desktop/MV_Dev/docs/work/` (which may itself be a dedicated private repo).
 
 ## Phase 2: Read Context (session start)
 
@@ -149,7 +157,8 @@ When the user ends a session or says "save context for next time":
 
 1. Update `PROJECT.md` **Current focus** and **Next**
 2. Append an **End of session** block to today's journal
-3. Tell the user which files were updated (paths only, no need to dump full content)
+3. **Commit the work-context repo** if it is git-backed (Phase 1): `git -C ~/Desktop/MV_Dev/docs/work add -A && git commit -m "<one-line summary>"`, and push if a remote exists. This snapshots the session so any later overwrite is recoverable.
+4. Tell the user which files were updated (paths only, no need to dump full content)
 
 For cold starts in a new chat, the Cursor rule (Phase 5) should make Phase 2 automatic.
 
@@ -205,6 +214,7 @@ When PROJECT.md cites work owned by **other** Linear projects or teams (events b
 - **Brief the user before logging** — walk through every non-trivial decision in a short, evidence-linked, skimmable brief (question → options → evidence → recommendation → ask) and get a quick agree *before* it enters the files (see **Keep the user in sync**)
 - **Concise over complete** — future agents skim; bullets beat paragraphs
 - **Current over historical** — history lives in dated journals
+- **Versioned & recoverable** — the work-context root should be its own dedicated **private git repo**; commit after each update so any overwrite is recoverable (`git restore`). When migrating a stray in-repo `docs/work/`, **merge into the canonical tree, never blind-`mv`/`cp` over it**, and verify the canonical path with a direct `ls` first — the Glob/search tools are workspace-scoped and will misreport an out-of-workspace path as absent
 - **Decisions explicit** — "we chose X because Y", not implied from chat
 - **Tracker is source of truth for status — except code-landed state** — on team projects, reconcile `PROJECT.md` against Linear at session start; never assume status from memory or stale files. For "merged/shipped/landed" claims, verify against the **GitHub PR** (`gh pr view --json state,mergedAt`), which leads the Linear ticket — never write "merged" off a ticket still showing *In Review*
 - **Other teams' work = dependencies, not facts** — anything in `Constraints / decisions` / `Open questions` / `Heads-ups` that depends on tickets/events/services owned by another project or team is tracked as a `## Dependencies (cross-project)` row with its own status, not stated as if already true. Use `check-cross-project-dependencies` to verify and flag drift ("file said deprecated, Linear says unstarted") rather than trusting stale assumption-language ("by launch", "will be deprecated", "source of truth =")
