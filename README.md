@@ -2,6 +2,10 @@
 
 Personal Cursor and Claude Code skills — versioned and synced from one repo.
 
+## Make skills fire automatically
+
+These skills are auto-surfaced to the agent, but to make them fire reliably — biased toward over-invocation — add the one-time global rule in [INVOKING-SKILLS.md](INVOKING-SKILLS.md) (Cursor User Rules / Claude Code).
+
 ## Skills
 
 | Skill | Description | Origin |

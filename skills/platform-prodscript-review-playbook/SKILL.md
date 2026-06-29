@@ -1,10 +1,12 @@
 ---
 name: platform-prodscript-review-playbook
-description: >
-  Review and manually validate Platform prodscripts (lib/platform/prod_scripts)
-  against a local anonymised production database snapshot. Use when writing,
-  reviewing, or testing a prodscript, mix gen.prodscript, or Platform.ProdScripts
-  modules in the Multiverse platform repo.
+description: >-
+  Use whenever working on Platform prodscripts — writing, reviewing, or
+  testing a prodscript, running mix gen.prodscript, or touching
+  Platform.ProdScripts.* / lib/platform/prod_scripts/ in the Multiverse
+  platform repo. Sets up a safe local validation loop against an anonymised
+  production database snapshot (checkpoint plus a restorable working copy) so
+  destructive scripts are validated before merge.
 ---
 
 # Platform prodscript review playbook

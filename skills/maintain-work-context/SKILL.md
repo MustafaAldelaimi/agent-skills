@@ -1,13 +1,14 @@
 ---
 name: maintain-work-context
-description: >
-  Bootstrap and maintain a live project work journal so AI agents stay as
-  context-aware as the user. Every logged decision is evidence-based and
-  verifiable (links to Linear tickets/comments, GitHub PRs, or Slack
-  messages), and the user is briefed on each decision in a short, skimmable
-  walkthrough before it is recorded. Use when the user wants to track daily
-  tasks, month-long projects, work logs, living documentation, session
-  handoff, or asks to set up, read, or update PROJECT.md / work context files.
+description: >-
+  Use proactively at the start and end of any non-trivial work session, and
+  whenever the user wants to track or hand off work — daily tasks, month-long
+  projects, work logs, living documentation, session handoff, or "set up /
+  read / update PROJECT.md / work context". Bootstraps and maintains a live
+  project work journal so AI agents stay as context-aware as the user. Every
+  logged decision is evidence-based and verifiable (links to Linear
+  tickets/comments, GitHub PRs, or Slack messages), and the user is briefed on
+  each decision in a short, skimmable walkthrough before it is recorded.
 ---
 
 # Maintain Work Context

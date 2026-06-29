@@ -1,22 +1,17 @@
 ---
 name: propose-skill-improvement
-description: >
-  Self-observation skill: when the agent has just resolved something the hard
-  way (multiple wrong directions, failed tool calls, repeated user re-asks,
-  stale-cache misses) OR had an unprompted epiphany that generalises (a
-  paper-cut that will recur, a root-cause one level up from the user's
-  question), propose a concrete, evidence-linked skill change that would
-  prevent or shorten the next occurrence — and, on the user's Yes, raise a PR
-  against `MustafaAldelaimi/agent-skills` to create or update the target skill.
-  Strictly consent-gated: never edits or opens a PR without an explicit Yes.
-  No per-session firing cap, but never re-proposes the same (friction, target,
-  change) tuple in the same session (Yes or No — already-said). Never fires
-  from a tool error alone (must include the resolution arc), and only when
-  the friction is specific and addressable by a skill change (not a vague
-  "be more careful"). Use when the agent notices it just cracked something
-  after struggling, when it spots a generalisable lesson the user didn't ask
-  for, or when the user asks "what could we change so this is easier next
-  time".
+description: >-
+  Invoke proactively (don't wait to be asked) the moment you've resolved
+  something the hard way — multiple wrong directions, failed tool calls,
+  repeated user re-asks, stale-cache misses — or hit an unprompted epiphany
+  that generalises (a recurring paper-cut, a root-cause one level up from the
+  user's question); also when the user asks "what could we change so this is
+  easier next time". Proposes a concrete, evidence-linked skill change that
+  would prevent or shorten the next occurrence and, on the user's explicit
+  Yes, raises a PR against MustafaAldelaimi/agent-skills. Strictly
+  consent-gated: never edits or opens a PR without a Yes. Never re-proposes
+  the same (friction, target, change) tuple in the same session, and never
+  fires from a tool error alone (must include the resolution arc).
 ---
 
 # Propose Skill Improvement

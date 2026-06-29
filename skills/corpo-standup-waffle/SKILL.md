@@ -1,19 +1,18 @@
 ---
 name: corpo-standup-waffle
-description: >
-  Generate an impromptu standup script (what's done, what's pending, what's
-  happening today, who needs to be chased) by reading the user's
-  PROJECT.md/journal and enriching with read-only Linear + Slack + GitHub
-  lookups. Tracks each item through started -> in-flight -> finished
-  per-audience (team-standup, leadership-update, async-post), so an item
-  already announced to that audience isn't re-announced. Optimised to
-  maximise perceived activity, foreground dependencies, and surface
-  people/teams to "loop in". Strictly output-only — the skill never sends,
-  posts, replies, or drafts anything; it returns a script for the user to
-  read aloud. Use when the user asks for a standup, status update, stand-up
-  waffle, daily status, "what have I done / what's pending / what am I
-  working on today", blockers update, or asks who they need to chase / loop
-  in / sync with.
+description: >-
+  Use whenever the user needs a standup or status update — "standup",
+  "stand-up waffle", "status update", "daily status", "what have I done /
+  what's pending / what am I working on today", a blockers update, or asks who
+  they need to chase / loop in / sync with. Generates an impromptu standup
+  script (done / pending / happening today / who to chase) by reading the
+  user's PROJECT.md/journal and enriching with read-only Linear + Slack +
+  GitHub lookups. Tracks each item through started -> in-flight -> finished
+  per-audience (team-standup, leadership-update, async-post) so an item
+  already announced to that audience isn't re-announced. Optimised to maximise
+  perceived activity, foreground dependencies, and surface people/teams to
+  loop in. Strictly output-only — never sends, posts, replies, or drafts
+  anything; returns a script for the user to read aloud.
 ---
 
 # Corpo Standup Waffle

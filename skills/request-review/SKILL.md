@@ -1,10 +1,11 @@
 ---
 name: request-review
-description: >
-  Draft Slack PR review requests in the DP Learner team format for #dp-learner.
-  Gathers open PRs from Linear (In Review), GitHub URLs, or gh. Use when the user
-  asks to request a review, ping for review, draft a review message, or post in
-  #dp-learner with :git_rereview_requested.
+description: >-
+  Use whenever the user wants to ask for a PR review — "request a review",
+  "ping for review", "draft a review message", "post in #dp-learner", or
+  mentions the :git_rereview_requested: reaction. Drafts a copy-paste Slack
+  PR-review request in the DP Learner team format for #dp-learner, gathering
+  open PRs from Linear (In Review), GitHub URLs, or gh.
 ---
 
 # Request Review (DP Learner Slack)
