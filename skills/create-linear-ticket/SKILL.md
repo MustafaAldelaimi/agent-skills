@@ -18,6 +18,13 @@ solution or list implementation steps.
 1. Accept the problem description from the user, or infer it from conversation context.
 2. Ask the user which Linear **team** and (optionally) **project** the ticket belongs to.
    - If the user is unsure, fetch options via `list_teams` / `list_projects` and present them using `AskQuestion`.
+3. **Single-PR scope check.** Size the ticket so it can be resolved by one
+   reviewable pull request — aim for a 1:1 ticket↔PR mapping. If the problem is
+   too large for a single PR, split it into multiple tickets (each deliverable
+   in one PR) rather than creating one oversized ticket. Confirm any proposed
+   split with the user before proceeding, then create the resulting tickets
+   together and link them to each other in Phase 5. This is a default
+   ("typically"), not an absolute rule — genuine exceptions are fine.
 
 ## Phase 2: Codebase Context Gathering
 
